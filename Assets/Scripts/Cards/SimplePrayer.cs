@@ -25,6 +25,14 @@ public class SimplePrayer : Card
         Debug.Log("There's a result: " + action.Result);
         // give rewards? do some animation?
 
+        if (action.Result == true)
+        {
+            foreach (var increase in StatIncreases)
+            {
+                   Toolbox.Instance.StatsManager.AddToStat(increase.Stat, increase.Amount);
+            }
+        }
+
         Toolbox.Instance.CardGameManager.PerformAction();
 
         Debug.Log($"card {gameObject.name} is gone");

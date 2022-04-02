@@ -21,6 +21,15 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     public string Description;
     private Sprite _cardSprite;
 
+    [Serializable]
+    public class StatIncrease
+    {
+        public StatsManager.Stat Stat;
+        public int Amount;
+    }
+
+    public List<StatIncrease> StatIncreases;
+
     public virtual Routine Draw()
     {
         yield return SlideIn().Combine(Reveal().AsCoroutine());
@@ -99,6 +108,11 @@ public abstract class Card : MonoBehaviour, IPoolableObject
             f => transform.localScale = new Vector3(f,transform.localScale.y, transform.localScale.z),
             () => transform.localScale.x, 0.45f, 1, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
         yield return flipBack;
+    }
+
+    protected Routine RevealStats()
+    {
+        yield break;
     }
 
     public Routine SlideIntoDeck(float delay)

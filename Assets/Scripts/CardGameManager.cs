@@ -30,6 +30,8 @@ public class CardGameManager : MonoBehaviour
     private bool _actionTriggered;
     private bool _actionPerformed;
 
+    public event OnDeckChangedEvent OnDeckChanged;
+
     public class DefaultRandomGenerator : IGenerator<int, float>
     {
         public int Seed { get; set; }
@@ -137,6 +139,7 @@ public class CardGameManager : MonoBehaviour
         }
 
         DrawnCard = CurrentDeck.Dequeue();
+        OnDeckChanged?.Invoke(CurrentDeck.Count);
         yield return DrawnCard.Draw().AsCoroutine();
     }
 
@@ -160,8 +163,8 @@ public class CardGameManager : MonoBehaviour
 
     private Routine AddCard(Card card, int index)
     {
-        Debug.Log($"Added card [{card.name}] to deck.");
         CurrentDeck.Enqueue(card);
+        OnDeckChanged?.Invoke(CurrentDeck.Count);
 
         float delay = (1f- Mathf.Clamp(index,0,10)*0.1f)*0.03f + 0.15f;
 
@@ -170,3 +173,5 @@ public class CardGameManager : MonoBehaviour
 
     #endregion
 }
+
+public delegate void OnDeckChangedEvent(int deckSize);

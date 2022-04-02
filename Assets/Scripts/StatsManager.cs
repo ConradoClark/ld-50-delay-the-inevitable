@@ -1,17 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Licht.Interfaces.Update;
 using UnityEngine;
 
 public class StatsManager : MonoBehaviour, IResettable
 {
+    public enum Stat
+    {
+        Faith,
+        Sorcery
+    }
     public int CurrentTurn { get; private set; } = 1;
-    public int Faith { get; private set; } = 1;
-    public int Sorcery { get; private set; } = 1;
+
+    public Dictionary<Stat, int> Stats = new Dictionary<Stat, int>
+    {
+        {Stat.Faith, 1},
+        {Stat.Sorcery, 1}
+    };
 
     public event OnValueChanged OnTurnChanged;
-    public event OnValueChanged OnFaithChanged;
-    public event OnValueChanged OnSorceryChanged;
+    public event OnStatChanged OnStatChanged;
 
     // after an action is performed (play, skip, etc)
     public void IncreaseTurn()
@@ -20,26 +30,24 @@ public class StatsManager : MonoBehaviour, IResettable
         OnTurnChanged?.Invoke(CurrentTurn);
     }
 
-    public void AddToFaith(int value)
+    public void AddToStat(Stat stat, int value)
     {
-        Faith += value;
-        OnFaithChanged?.Invoke(Faith);
+        if (!Stats.ContainsKey(stat)) return;
+        Stats[stat] += value;
+        OnStatChanged?.Invoke(stat, Stats[stat]);
     }
-
-    public void AddToSorcery(int value)
-    {
-        Faith += value;
-        OnSorceryChanged?.Invoke(Faith);
-    }
-
     public bool Reset()
     {
-        CurrentTurn = Faith = Sorcery = 1;
+        CurrentTurn = 1;
+        foreach (var stat in Stats.Keys.ToArray())
+        {
+            Stats[stat] = 1;
+        }
         OnTurnChanged?.Invoke(CurrentTurn);
-        OnFaithChanged?.Invoke(Faith);
-        OnSorceryChanged?.Invoke(Sorcery);
+        
         return true;
     }
 }
 
 public delegate void OnValueChanged(int value);
+public delegate void OnStatChanged(StatsManager.Stat stat, int value);

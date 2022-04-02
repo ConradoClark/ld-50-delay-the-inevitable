@@ -99,3 +99,6 @@ MonoBehaviour:
   Name: Simple Prayer
   Type: 0
   Description: Clap your hands as fervorously as you can
+  StatIncreases:
+  - Stat: 0
+    Amount: 1

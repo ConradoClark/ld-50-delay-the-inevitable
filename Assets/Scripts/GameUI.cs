@@ -9,6 +9,7 @@ public class GameUI : MonoBehaviour
 {
     public TMP_Text Faith;
     public TMP_Text Sorcery;
+    public TMP_Text Cards;
     public TMP_Text Turn;
     public TMP_Text Timer;
     private int _timerCount;
@@ -17,25 +18,33 @@ public class GameUI : MonoBehaviour
     void OnDisable()
     {
         Toolbox.Instance.StatsManager.OnTurnChanged -= StatsManager_OnTurnChanged;
+        Toolbox.Instance.StatsManager.OnStatChanged -= StatsManager_OnStatChanged;
     }
 
     void OnEnable()
     {
         Toolbox.Instance.MainMachinery.AddBasicMachine(88, HandleTimer());
         Toolbox.Instance.StatsManager.OnTurnChanged += StatsManager_OnTurnChanged;
-        // this state event could be generic
-        Toolbox.Instance.StatsManager.OnFaithChanged += StatsManager_OnFaithChanged;
-        Toolbox.Instance.StatsManager.OnSorceryChanged += StatsManager_OnSorceryChanged;
+        Toolbox.Instance.StatsManager.OnStatChanged += StatsManager_OnStatChanged;
+        Toolbox.Instance.CardGameManager.OnDeckChanged += CardGameManager_OnDeckChanged;
     }
 
-    private void StatsManager_OnFaithChanged(int value)
+    private void CardGameManager_OnDeckChanged(int deckSize)
     {
-        Faith.text = value.ToString().PadLeft(2,'0');
+        Cards.text = "x " + deckSize.ToString().PadLeft(2, '0');
     }
 
-    private void StatsManager_OnSorceryChanged(int value)
+    private void StatsManager_OnStatChanged(StatsManager.Stat stat, int value)
     {
-        Sorcery.text = value.ToString().PadLeft(2, '0');
+        switch (stat)
+        {
+            case StatsManager.Stat.Faith:
+                Faith.text = value.ToString().PadLeft(2, '0');
+                break;
+            case StatsManager.Stat.Sorcery:
+                Sorcery.text = value.ToString().PadLeft(2, '0');
+                break;
+        }
     }
 
     private void StatsManager_OnTurnChanged(int value)

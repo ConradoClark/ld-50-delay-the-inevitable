@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Licht.Impl.Orchestration;
 using TMPro;
 using UnityEngine;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
@@ -10,6 +12,13 @@ public class CardUI : MonoBehaviour
     public TMP_Text CardName;
     public TMP_Text CardDescription;
 
+    public Transform StatsGroup;
+    public TMP_Text FaithIncrease;
+    public TMP_Text SorceryIncrease;
+
+    private TMP_Text[] _texts;
+    private SpriteRenderer[] _sprites;
+
     public Routine Show()
     {
         this.gameObject.SetActive(true);
@@ -19,6 +28,56 @@ public class CardUI : MonoBehaviour
         if (card == null) yield break; // should never happen
         CardName.text = card.Name;
         CardDescription.text = card.Description;
+
+        var faithIncrease = GetStatIncrease(StatsManager.Stat.Faith, card);
+        FaithIncrease.text = faithIncrease.ToString().PadLeft(2, '0');
+
+        var sorceryIncrease = GetStatIncrease(StatsManager.Stat.Sorcery, card);
+        SorceryIncrease.text = sorceryIncrease.ToString().PadLeft(2, '0');
+
+        var targetX = StatsGroup.position.x;
+        StatsGroup.position = new Vector3(StatsGroup.position.x + 0.5f, StatsGroup.position.y, StatsGroup.position.z);
+        Toolbox.Instance.MainMachinery.AddBasicMachine(44, AnimateStats(targetX));
+    }
+
+    private Routine AnimateStats(float targetX)
+    {
+        var slideStats = EasingYields.Lerp(f =>
+                StatsGroup.position = new Vector3(f, StatsGroup.position.y, StatsGroup.position.z),
+            () => StatsGroup.position.x, 0.35f, targetX, EasingYields.EasingFunction.QuadraticEaseOut,
+            Toolbox.Instance.MainTimer);
+
+        _texts ??= StatsGroup.GetComponentsInChildren<TMP_Text>();
+        _sprites ??= StatsGroup.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var text in _texts)
+        {
+            text.color = new Color(text.color.r, text.color.g, text.color.b, 0);
+        }
+
+        foreach (var sprite in _sprites)
+        {
+            sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, 0);
+        }
+
+        var fadeInTexts = EasingYields.Lerp(f =>
+            {
+                foreach (var text in _texts)
+                {
+                    text.color = new Color(text.color.r, text.color.g, text.color.b, f);
+                }
+                foreach (var sprite in _sprites)
+                {
+                    sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, f);
+                }
+            }, () => _texts.First().color.a, 0.15f,1f, EasingYields.EasingFunction.CubicEaseInOut,
+            Toolbox.Instance.MainTimer);
+
+        yield return slideStats.Combine(fadeInTexts);
+    }
+
+    private int GetStatIncrease(StatsManager.Stat stat, Card card)
+    {
+        return (card.StatIncreases.FirstOrDefault(s => s.Stat == stat)?.Amount ?? 0);
     }
 
     public Routine HideActions()
