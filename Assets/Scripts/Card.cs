@@ -17,7 +17,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
 
     public virtual Routine Play()
     {
-        yield break;
+        yield return PlayEffect().AsCoroutine();
     }
 
     public void Initialize()
@@ -39,13 +39,33 @@ public abstract class Card : MonoBehaviour, IPoolableObject
         return true;
     }
 
+    protected Routine PlayEffect()
+    {
+        var motion = EasingYields.Lerp(
+            f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
+            () => transform.position.y, 1f,
+            transform.position.y + 0.4f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+
+        var bounceEffect = EasingYields.Lerp(
+            f => transform.localScale = new Vector3(f, f, transform.localScale.z),
+            () => transform.localScale.x, 0.35f,
+            1.5f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+
+        var bounceBackEffect = EasingYields.Lerp(
+            f => transform.localScale = new Vector3(f, f, transform.localScale.z),
+            () => transform.localScale.x, 0.35f,
+            1.25f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+
+        yield return motion.Combine(
+            bounceEffect.Then(bounceBackEffect));
+    }
 
     protected IEnumerable<Action> SlideIn()
     {
         return EasingYields.Lerp(
             f => transform.position =
                 new Vector3(f, transform.position.y, transform.position.z),
-            () => transform.position.x, 0.75f, transform.position.x - 1.5f,
+            () => transform.position.x, 0.75f, transform.position.x - 2.5f,
             EasingYields.EasingFunction.QuadraticEaseOut,
             Toolbox.Instance.MainTimer);
     }

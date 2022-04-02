@@ -26,6 +26,7 @@ public class CardGameManager : MonoBehaviour
     public CardUI CardUI;
 
     private bool _hitEndGameTrigger;
+    private bool _actionTriggered;
     private bool _actionPerformed;
 
     public class DefaultRandomGenerator : IGenerator<int, float>
@@ -59,8 +60,9 @@ public class CardGameManager : MonoBehaviour
             yield return GenerateDeck().AsCoroutine();
             yield return DrawCard().AsCoroutine();
             yield return ShowCardUI().AsCoroutine();
-            yield return WaitForAction().AsCoroutine();
-            yield return HideCardUI().AsCoroutine();
+            yield return WaitForActionTriggered().AsCoroutine();
+            yield return HideCardUI().AsCoroutine(); // be careful with timing
+            yield return WaitForActionPerformed().AsCoroutine();
             while (IsGameActive)
             {
                 yield return TimeYields.WaitOneFrameX;
@@ -78,7 +80,16 @@ public class CardGameManager : MonoBehaviour
         yield return CardUI.Hide().AsCoroutine();
     }
 
-    private Routine WaitForAction()
+    private Routine WaitForActionTriggered()
+    {
+        _actionTriggered = false;
+        while (!_actionTriggered)
+        {
+            yield return TimeYields.WaitOneFrameX;
+        }
+    }
+
+    private Routine WaitForActionPerformed()
     {
         _actionPerformed = false;
         while (!_actionPerformed)
@@ -89,6 +100,11 @@ public class CardGameManager : MonoBehaviour
 
     // TODO: Make a better way to trigger events or w/e?
     public void TriggerAction()
+    {
+        _actionTriggered = true;
+    }
+
+    public void PerformAction()
     {
         _actionPerformed = true;
     }
