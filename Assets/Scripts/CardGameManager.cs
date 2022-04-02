@@ -130,22 +130,8 @@ public class CardGameManager : MonoBehaviour
 
         float delay = (1f- Mathf.Clamp(index,0,10)*0.1f)*0.03f + 0.15f;
 
-        var motion = EasingYields.Lerp(
-            f => card.transform.position = new Vector3(card.transform.position.x, f, card.transform.position.z),
-            () => card.transform.position.y, delay,
-            card.transform.position.y - 0.75f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
-
-        yield return motion.Combine(WaitAndSwoop(card, delay).AsCoroutine());
+        yield return card.SlideIntoDeck(delay).AsCoroutine();
     }
 
-    private Routine WaitAndSwoop(Card card, float delay)
-    {
-        yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, delay);
-        var motion = EasingYields.Lerp(
-            f => card.transform.position = new Vector3(card.transform.position.x, f, card.transform.position.z),
-            () => card.transform.position.y, delay*0.4f,
-            card.transform.position.y - 0.35f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
-        Toolbox.Instance.MainMachinery.AddBasicMachine(200, motion);
-    }
     #endregion
 }

@@ -64,4 +64,24 @@ public abstract class Card : MonoBehaviour, IPoolableObject
             () => transform.localScale.x, 0.45f, 1, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
         yield return flipBack;
     }
+
+    public Routine SlideIntoDeck(float delay)
+    {
+        var motion = EasingYields.Lerp(
+            f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
+            () => transform.position.y, delay,
+            transform.position.y - 0.75f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+
+        yield return motion.Combine(WaitAndSwoop(delay).AsCoroutine());
+    }
+
+    protected Routine WaitAndSwoop(float delay)
+    {
+        yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, delay);
+        var motion = EasingYields.Lerp(
+            f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
+            () => transform.position.y, delay * 0.4f,
+            transform.position.y - 0.35f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+        Toolbox.Instance.MainMachinery.AddBasicMachine(200, motion);
+    }
 }
