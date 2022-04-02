@@ -18,6 +18,7 @@ public class Toolbox : MonoBehaviour
     public PlayerInput MainInput;
     public Camera MainCamera;
     public CardDefaults CardDefaults;
+    public ActionsManager ActionsManager;
 
     private void OnEnable()
     {

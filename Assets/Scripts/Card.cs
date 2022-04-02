@@ -81,7 +81,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
         return EasingYields.Lerp(
             f => transform.position =
                 new Vector3(f, transform.position.y, transform.position.z),
-            () => transform.position.x, 0.75f, transform.position.x - 2.5f,
+            () => transform.position.x, 0.75f, transform.position.x - 2.75f,
             EasingYields.EasingFunction.QuadraticEaseOut,
             Toolbox.Instance.MainTimer);
     }

@@ -58,13 +58,23 @@ public class CardGameManager : MonoBehaviour
         while (IsGameActive)
         {
             yield return GenerateDeck().AsCoroutine();
-            yield return DrawCard().AsCoroutine();
-            yield return ShowCardUI().AsCoroutine();
-            yield return WaitForActionTriggered().AsCoroutine();
-            yield return HideCardActions().AsCoroutine(); // be careful with timing
-            yield return WaitForActionPerformed().AsCoroutine();
+
             while (IsGameActive)
             {
+                yield return DrawCard().AsCoroutine();
+
+                if (_hitEndGameTrigger)
+                {
+                    Debug.Log("game over, show results, etc.");
+                    IsGameActive = false;
+                    break;
+                }
+
+                yield return ShowCardUI().AsCoroutine();
+                yield return WaitForActionTriggered().AsCoroutine();
+                yield return HideCardActions().AsCoroutine(); // be careful with timing
+                yield return WaitForActionPerformed().AsCoroutine();
+                yield return HideCardUI().AsCoroutine();
                 yield return TimeYields.WaitOneFrameX;
             }
         }

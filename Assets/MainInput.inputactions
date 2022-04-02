@@ -2,7 +2,7 @@
     "name": "MainInput",
     "maps": [
         {
-            "name": "UI",
+            "name": "Default",
             "id": "86eba134-b7e7-4562-a1df-e237b4e2a8e7",
             "actions": [
                 {
@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Clap",
+                    "type": "Button",
+                    "id": "1c496d56-cc90-4af6-a672-0c13587e36f1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Tap",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -44,6 +53,17 @@
                     "processors": "",
                     "groups": "Keyboard & Mouse",
                     "action": "MousePosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5c2a43bb-259d-4dec-8e68-09fa5b9750ab",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Tap",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Clap",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
