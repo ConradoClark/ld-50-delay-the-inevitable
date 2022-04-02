@@ -1,0 +1,62 @@
+Delay The Inevitable
+
+Ideas
+- Doomsday is coming
+- You can delay it and manipulate odds in your favour
+- By doing that, you can prevent your death and/or get different endings/scores?
+- You're given a deck of cards
+- After going through all cards, a cosmic horror is going to tear the world apart
+- You can go through all cards in sequence, but that will only make the game end faster and with a bad endings
+- You can manipulate cards or even make more appear depending on circunstances, but doing so makes them harder
+- Cards mean an action sequence you have to complete (or maybe a mini game?)
+- Cards can also give resources that may allow you to bargain for your soul
+- Something like a "cultist simulator" in the sense you have to figure out what to do
+
+A deck starts with 10 cards? 
+(the game should show you that you can finish it with the lowest score if you just follow the most obvious instructions)
+
+Types of cards?
+- Sacrifices (requires people around you?)
+- Rituals (requires objects)
+- Prayers
+- Circles
+
+Cards have rewards
+- They may have invitations (brings people to the table)
+- They may have ritual objects (resource)
+- They may give you more cards
+- They may have specific rewards (goals)
+
+Cards are drawn one by one (?)
+
+Actions
+You have 5 seconds to take an action:
+
+You can either play, burn, or delay a card.
+You can choose to play a card whether or not meet its requirements, and then:
+	- If you execute it correctly, you gain its positive outcome
+	- If you fail it, you gain its negative outcome
+You can burn cards to get rid of a negative outcome, by consuming a ritual object.
+You can delay cards any time you want, but by doing so they will get stronger the next time they come. Cards can be delayed 2 times (?)
+If you do nothing, the card will be destroyed permanently.
+ 
+Artifacts
+- It's what you use when you play cards.
+You start with "Clap" (space-bar) and with "Chalk" (mouse)
+So you can do prayers and rituals that require clapping
+Or draw circles.
+
+You gain artifacts by doing stuff in the game
+Example: After 5 successful prayers, you learn to "Bow" (b button)
+Then you can play cards that require you to bow, enabling more options.
+
+Basic Cards
+
+Simple Prayer
++ Mash the "Pray" button
+
+Precise Prayer
++ Press the "Pray" button at the exact time
+
+Appeal
++ Draw a line on the specified mark
