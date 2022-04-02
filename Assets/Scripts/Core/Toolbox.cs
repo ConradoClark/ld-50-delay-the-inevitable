@@ -16,6 +16,8 @@ public class Toolbox : MonoBehaviour
     // Components
     public CardGameManager CardGameManager;
     public PlayerInput MainInput;
+    public Camera MainCamera;
+    public CardDefaults CardDefaults;
 
     private void OnEnable()
     {

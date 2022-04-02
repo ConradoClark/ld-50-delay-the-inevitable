@@ -9,5 +9,6 @@ public static class Constants
     public static class InputActions
     {
         public const string Click = "click";
+        public const string MousePosition = "mousePosition";
     }
 }

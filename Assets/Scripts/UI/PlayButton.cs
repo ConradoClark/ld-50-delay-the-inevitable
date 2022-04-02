@@ -4,6 +4,7 @@ using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generi
 
 public class PlayButton : MonoBehaviour
 {
+    public Collider2D Collider;
     private bool _hasClicked;
     void OnEnable()
     {
@@ -15,9 +16,11 @@ public class PlayButton : MonoBehaviour
     {
         var manager = Toolbox.Instance.CardGameManager;
         var clickAction = Toolbox.Instance.MainInput.actions[Constants.InputActions.Click];
+        var mousePosValue = Toolbox.Instance.MainInput.actions[Constants.InputActions.MousePosition];
         while (!_hasClicked)
         {
-            if (clickAction.WasPerformedThisFrame())
+            var mousePos = Toolbox.Instance.MainCamera.ScreenToWorldPoint(mousePosValue.ReadValue<Vector2>());
+            if (clickAction.WasPerformedThisFrame() && Collider.OverlapPoint(mousePos))
             {
                 _hasClicked = true;
                 manager.TriggerAction();

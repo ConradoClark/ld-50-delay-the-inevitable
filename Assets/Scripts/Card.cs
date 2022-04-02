@@ -8,7 +8,18 @@ using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generi
 
 public abstract class Card : MonoBehaviour, IPoolableObject
 {
+    public enum CardType
+    {
+        Prayer,
+        Circle,
+        Ritual
+    }
+
     public SpriteRenderer SpriteRenderer;
+    public string Name;
+    public CardType Type;
+    public string Description;
+    private Sprite _cardSprite;
 
     public virtual Routine Draw()
     {
@@ -22,6 +33,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
 
     public void Initialize()
     {
+        _cardSprite = SpriteRenderer.sprite;
     }
 
     public bool IsActive { get; set; }
@@ -36,6 +48,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     {
         gameObject.SetActive(true);
         IsActive = true;
+        SpriteRenderer.sprite = Toolbox.Instance.CardDefaults.BackFaceSprite;
         return true;
     }
 
@@ -77,7 +90,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
             () =>  transform.localScale.x, 0.45f, 0, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
 
         yield return flipMotion;
-        SpriteRenderer.color = Color.cyan; // TODO: this is just for testing
+        SpriteRenderer.sprite = _cardSprite;
 
         var flipBack = EasingYields.Lerp(
             f => transform.localScale = new Vector3(f,transform.localScale.y, transform.localScale.z),
