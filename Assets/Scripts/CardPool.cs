@@ -25,7 +25,7 @@ public class CardPool : MonoBehaviour, IPoolableObjectFactory<Card>
         obj.name = obj.name.Replace("(Clone)", $"#{_count}"); 
         obj.SetActive(false);
         var card = obj.GetComponent<Card>();
-        card.SpriteRenderer.color = Random.ColorHSV(0, 1);
+        card.SpriteRenderer.color = Random.ColorHSV(0f, 1,1f,1f,0.5f,1f);
         return card;
     }
 
