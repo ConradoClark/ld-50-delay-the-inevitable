@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Licht.Impl.Orchestration;
 using Licht.Impl.Time;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Toolbox : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Toolbox : MonoBehaviour
 
     // Components
     public CardGameManager CardGameManager;
+    public PlayerInput MainInput;
 
     private void OnEnable()
     {

@@ -4,7 +4,6 @@ using Licht.Impl.Generation;
 using Licht.Impl.Orchestration;
 using Licht.Interfaces.Generation;
 using UnityEngine;
-using UnityEngine.UIElements.Experimental;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
 
 public class CardGameManager : MonoBehaviour
@@ -24,8 +23,10 @@ public class CardGameManager : MonoBehaviour
 
     public Queue<Card> CurrentDeck;
     public Card DrawnCard;
+    public CardUI CardUI;
 
     private bool _hitEndGameTrigger;
+    private bool _actionPerformed;
 
     public class DefaultRandomGenerator : IGenerator<int, float>
     {
@@ -57,7 +58,9 @@ public class CardGameManager : MonoBehaviour
         {
             yield return GenerateDeck().AsCoroutine();
             yield return DrawCard().AsCoroutine();
-
+            yield return ShowCardUI().AsCoroutine();
+            yield return WaitForAction().AsCoroutine();
+            yield return HideCardUI().AsCoroutine();
             while (IsGameActive)
             {
                 yield return TimeYields.WaitOneFrameX;
@@ -65,6 +68,32 @@ public class CardGameManager : MonoBehaviour
         }
     }
 
+    private Routine ShowCardUI()
+    {
+        yield return CardUI.Show().AsCoroutine();
+    }
+
+    private Routine HideCardUI()
+    {
+        yield return CardUI.Hide().AsCoroutine();
+    }
+
+    private Routine WaitForAction()
+    {
+        _actionPerformed = false;
+        while (!_actionPerformed)
+        {
+            yield return TimeYields.WaitOneFrameX;
+        }
+    }
+
+    // TODO: Make a better way to trigger events or w/e?
+    public void TriggerAction()
+    {
+        _actionPerformed = true;
+    }
+
+    // TODO: Move card effects to the card script file.
     private Routine DrawCard()
     {
         if (CurrentDeck.Count == 0)
