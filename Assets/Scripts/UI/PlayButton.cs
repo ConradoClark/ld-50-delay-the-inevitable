@@ -13,14 +13,16 @@ public class PlayButton : MonoBehaviour
 
     private Routine HandleClick()
     {
+        var manager = Toolbox.Instance.CardGameManager;
         var clickAction = Toolbox.Instance.MainInput.actions[Constants.InputActions.Click];
         while (!_hasClicked)
         {
             if (clickAction.WasPerformedThisFrame())
             {
                 _hasClicked = true;
-                Toolbox.Instance.CardGameManager.TriggerAction();
+                manager.TriggerAction();
                 // start the current card effect
+                yield return manager.DrawnCard.Play().AsCoroutine();
             }
 
             yield return TimeYields.WaitOneFrameX;

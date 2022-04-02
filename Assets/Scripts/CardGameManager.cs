@@ -93,7 +93,6 @@ public class CardGameManager : MonoBehaviour
         _actionPerformed = true;
     }
 
-    // TODO: Move card effects to the card script file.
     private Routine DrawCard()
     {
         if (CurrentDeck.Count == 0)
@@ -103,30 +102,8 @@ public class CardGameManager : MonoBehaviour
         }
 
         DrawnCard = CurrentDeck.Dequeue();
-        DrawnCard.Draw();
-        yield return EasingYields.Lerp(
-            f => DrawnCard.transform.position =
-                new Vector3(f, DrawnCard.transform.position.y, DrawnCard.transform.position.z),
-            () => DrawnCard.transform.position.x, 0.75f, DrawnCard.transform.position.x - 1.5f,
-            EasingYields.EasingFunction.QuadraticEaseOut,
-            Toolbox.Instance.MainTimer).Combine(ShowCard(DrawnCard).AsCoroutine());
+        yield return DrawnCard.Draw().AsCoroutine();
     }
-
-    private Routine ShowCard(Card card)
-    {
-        var flipMotion = EasingYields.Lerp(
-            f => card.transform.localScale = new Vector3(f, card.transform.localScale.y, card.transform.localScale.z),
-            () => card.transform.localScale.x, 0.45f, 0, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
-
-        yield return flipMotion;
-        card.SpriteRenderer.color = Color.cyan;
-
-        var flipBack = EasingYields.Lerp(
-            f => card.transform.localScale = new Vector3(f, card.transform.localScale.y, card.transform.localScale.z),
-            () => card.transform.localScale.x, 0.45f, 1, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
-        yield return flipBack;
-    }
-
 
     #region Deck Generation
     private Routine GenerateDeck()
