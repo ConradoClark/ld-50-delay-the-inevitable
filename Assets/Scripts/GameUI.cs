@@ -7,12 +7,40 @@ using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generi
 
 public class GameUI : MonoBehaviour
 {
+    public TMP_Text Faith;
+    public TMP_Text Sorcery;
+    public TMP_Text Turn;
     public TMP_Text Timer;
     private int _timerCount;
     private bool _isTimerActive;
+
+    void OnDisable()
+    {
+        Toolbox.Instance.StatsManager.OnTurnChanged -= StatsManager_OnTurnChanged;
+    }
+
     void OnEnable()
     {
         Toolbox.Instance.MainMachinery.AddBasicMachine(88, HandleTimer());
+        Toolbox.Instance.StatsManager.OnTurnChanged += StatsManager_OnTurnChanged;
+        // this state event could be generic
+        Toolbox.Instance.StatsManager.OnFaithChanged += StatsManager_OnFaithChanged;
+        Toolbox.Instance.StatsManager.OnSorceryChanged += StatsManager_OnSorceryChanged;
+    }
+
+    private void StatsManager_OnFaithChanged(int value)
+    {
+        Faith.text = value.ToString().PadLeft(2,'0');
+    }
+
+    private void StatsManager_OnSorceryChanged(int value)
+    {
+        Sorcery.text = value.ToString().PadLeft(2, '0');
+    }
+
+    private void StatsManager_OnTurnChanged(int value)
+    {
+        Turn.text = value.ToString();
     }
 
     public void SetTimer(int seconds)

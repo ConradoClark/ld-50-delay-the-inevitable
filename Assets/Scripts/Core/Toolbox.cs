@@ -19,6 +19,7 @@ public class Toolbox : MonoBehaviour
     public Camera MainCamera;
     public CardDefaults CardDefaults;
     public ActionsManager ActionsManager;
+    public StatsManager StatsManager;
 
     private void OnEnable()
     {

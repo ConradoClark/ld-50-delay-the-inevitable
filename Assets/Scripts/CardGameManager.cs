@@ -56,8 +56,10 @@ public class CardGameManager : MonoBehaviour
 
     private Routine GameLoop()
     {
+        var stats = Toolbox.Instance.StatsManager;
         while (IsGameActive)
         {
+            stats.Reset();
             yield return GenerateDeck().AsCoroutine();
 
             while (IsGameActive)
@@ -75,6 +77,7 @@ public class CardGameManager : MonoBehaviour
                 yield return WaitForActionTriggered().AsCoroutine();
                 yield return HideCardActions().AsCoroutine(); // be careful with timing
                 yield return WaitForActionPerformed().AsCoroutine();
+                stats.IncreaseTurn();
                 yield return HideCardUI().AsCoroutine();
                 yield return TimeYields.WaitOneFrameX;
             }
