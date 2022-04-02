@@ -24,6 +24,7 @@ public class ButtonMash : MonoBehaviour
         _timeLimitExpired = false;
         Result = null;
 
+        Toolbox.Instance.CardGameManager.GameUI.SetTimer((int) timeLimit);
         Toolbox.Instance.MainMachinery.AddBasicMachine(55, HandleTimeLimit(timeLimit));
         Toolbox.Instance.MainMachinery.AddBasicMachine(56, HandleAction());
         Toolbox.Instance.MainMachinery.AddBasicMachine(57, FlashText());
@@ -63,6 +64,7 @@ public class ButtonMash : MonoBehaviour
             if (_buttonMashCount >= RequiredAmount)
             {
                 Result = true;
+                Toolbox.Instance.CardGameManager.GameUI.ResetTimer();
                 break;
             }
 

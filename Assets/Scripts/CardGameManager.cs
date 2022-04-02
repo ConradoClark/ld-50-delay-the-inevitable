@@ -24,6 +24,7 @@ public class CardGameManager : MonoBehaviour
     public Queue<Card> CurrentDeck;
     public Card DrawnCard;
     public CardUI CardUI;
+    public GameUI GameUI;
 
     private bool _hitEndGameTrigger;
     private bool _actionTriggered;
