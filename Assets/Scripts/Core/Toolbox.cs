@@ -9,10 +9,11 @@ public class Toolbox : MonoBehaviour
     public static Toolbox Instance;
      
     // Global
-    public BasicMachinery MainMachinery;
-    public DefaultTimer MainTimer;
+    public BasicMachinery MainMachinery { get; private set; }
+    public DefaultTimer MainTimer { get; private set; }
 
     // Components
+    public CardGameManager CardGameManager;
 
     private void OnEnable()
     {
