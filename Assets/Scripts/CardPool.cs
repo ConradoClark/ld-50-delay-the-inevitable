@@ -32,4 +32,9 @@ public class CardPool : MonoBehaviour, IPoolableObjectFactory<Card>
     {
         return _objectPool.TryGetFromPool(out card);
     }
+
+    public bool ReleaseCard(Card card)
+    {
+        return _objectPool.Release(card);
+    }
 }

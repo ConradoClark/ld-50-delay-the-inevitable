@@ -10,9 +10,8 @@ public class SimplePrayer : Card
         Debug.Log("Test Card was drawn!");
     }
 
-    public override Routine Play()
+    public override Routine PlayCard()
     {
-        yield return base.Play().AsCoroutine();
         var action = Toolbox.Instance.ActionsManager.ButtonMashAction;
         action.Activate(10, 
             Constants.InputActions.Clap, Constants.DefaultTimeLimit);
@@ -31,11 +30,14 @@ public class SimplePrayer : Card
             {
                    Toolbox.Instance.StatsManager.AddToStat(increase.Stat, increase.Amount);
             }
+            SetResult(CardResult.Success);
+        }
+        else
+        {
+            // should failure have any consequences other than -1 card?
+            SetResult(CardResult.Failure);
         }
 
         Toolbox.Instance.CardGameManager.PerformAction();
-
-        Debug.Log($"card {gameObject.name} is gone");
-        gameObject.SetActive(false);
     }
 }

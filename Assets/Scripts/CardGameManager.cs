@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Licht.Impl.Generation;
 using Licht.Impl.Orchestration;
 using Licht.Interfaces.Generation;
@@ -19,6 +20,7 @@ public class CardGameManager : MonoBehaviour
 
     public bool IsGameActive { get; private set; }
     public List<CardDefinition> StartingPool;
+    public List<CardDefinition> FullPool;
     public int InitialDrawingCardCount = 10;
 
     public Queue<Card> CurrentDeck;
@@ -84,6 +86,12 @@ public class CardGameManager : MonoBehaviour
                 yield return TimeYields.WaitOneFrameX;
             }
         }
+    }
+
+    public void ReleaseCard(Card card)
+    {
+        var cardPool = (StartingPool.Concat(FullPool ?? new List<CardDefinition>())).First(def => def.Name == card.Name);
+        cardPool.Pool.ReleaseCard(card);
     }
 
     private Routine ShowCardUI()

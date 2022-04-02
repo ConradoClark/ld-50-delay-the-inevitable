@@ -4556,9 +4556,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StartingPool:
-  - Name: TestCard
+  - Name: Simple Prayer
     Pool: {fileID: 1916366540}
     weight: 1
+  FullPool: []
   InitialDrawingCardCount: 10
   DrawnCard: {fileID: 0}
   CardUI: {fileID: 774466650}

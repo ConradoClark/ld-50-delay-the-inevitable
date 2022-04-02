@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Licht.Impl.Orchestration;
 using Licht.Interfaces.Pooling;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
 
 public abstract class Card : MonoBehaviour, IPoolableObject
@@ -15,11 +16,21 @@ public abstract class Card : MonoBehaviour, IPoolableObject
         Ritual
     }
 
+    public enum CardResult
+    {
+        Unknown,
+        Success,
+        Failure,
+        Burn,
+        Skip,
+    }
+
     public SpriteRenderer SpriteRenderer;
     public string Name;
     public CardType Type;
     public string Description;
     private Sprite _cardSprite;
+    private CardResult _result;
 
     [Serializable]
     public class StatIncrease
@@ -35,12 +46,28 @@ public abstract class Card : MonoBehaviour, IPoolableObject
         yield return SlideIn().Combine(Reveal().AsCoroutine());
     }
 
-    public virtual Routine Play()
+    public virtual Routine PlayCard()
     {
-        var ui = Toolbox.Instance.CardGameManager.CardUI;
-        var cardPlayEffect = PlayEffect().AsCoroutine();
+        yield break;
+    }
 
-        yield return cardPlayEffect;
+    public Routine Play()
+    {
+        yield return PlayEffect().AsCoroutine();
+        yield return PlayCard().AsCoroutine();
+
+        switch (_result)
+        {
+            case CardResult.Success:
+                yield return SuccessEffect().AsCoroutine();
+                break;
+            case CardResult.Failure:
+                yield return FailureEffect().AsCoroutine();
+                break;
+            default: break;
+        }
+
+        Toolbox.Instance.CardGameManager.ReleaseCard(this);
     }
 
     public void Initialize()
@@ -51,6 +78,9 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     public bool IsActive { get; set; }
     public bool Deactivate()
     {
+        transform.localScale = Vector3.one;
+        _result = CardResult.Unknown;
+        SpriteRenderer.color = Color.white;
         gameObject.SetActive(false);
         IsActive = false;
         return true;
@@ -62,6 +92,48 @@ public abstract class Card : MonoBehaviour, IPoolableObject
         IsActive = true;
         SpriteRenderer.sprite = Toolbox.Instance.CardDefaults.BackFaceSprite;
         return true;
+    }
+
+    protected void SetResult(CardResult result)
+    {
+        _result = result;
+    }
+
+    protected Routine SuccessEffect()
+    {
+        var motion = EasingYields.Lerp(
+            f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
+            () => transform.position.y, 1f,
+            transform.position.y + 0.25f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+
+        var fade = EasingYields.Lerp(
+            f => SpriteRenderer.color = 
+                new Color(SpriteRenderer.color.r, SpriteRenderer.color.g, SpriteRenderer.color.b, f),
+            () => SpriteRenderer.color.a, 1f,
+            0f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+
+        yield return motion.Combine(fade);
+    }
+
+    protected Routine FailureEffect()
+    {
+        var rotate = TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 1f, delta =>
+        {
+            transform.Rotate(0, 0, (float) delta * 0.5f);
+        });
+
+        var resize = EasingYields.Lerp(
+            f => transform.localScale = new Vector3(f, f, transform.localScale.z),
+            () => transform.localScale.x, 1f,
+            0f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+
+        var fade = EasingYields.Lerp(
+            f => SpriteRenderer.color =
+                new Color(SpriteRenderer.color.r, SpriteRenderer.color.g, SpriteRenderer.color.b, f),
+            () => SpriteRenderer.color.a, 1f,
+            0f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+
+        yield return rotate.Combine(resize).Combine(fade);
     }
 
     protected Routine PlayEffect()
@@ -108,11 +180,6 @@ public abstract class Card : MonoBehaviour, IPoolableObject
             f => transform.localScale = new Vector3(f,transform.localScale.y, transform.localScale.z),
             () => transform.localScale.x, 0.45f, 1, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
         yield return flipBack;
-    }
-
-    protected Routine RevealStats()
-    {
-        yield break;
     }
 
     public Routine SlideIntoDeck(float delay)
