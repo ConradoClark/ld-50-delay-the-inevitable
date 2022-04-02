@@ -28,7 +28,10 @@ public abstract class Card : MonoBehaviour, IPoolableObject
 
     public virtual Routine Play()
     {
-        yield return PlayEffect().AsCoroutine();
+        var ui = Toolbox.Instance.CardGameManager.CardUI;
+        var cardPlayEffect = PlayEffect().AsCoroutine();
+
+        yield return cardPlayEffect;
     }
 
     public void Initialize()

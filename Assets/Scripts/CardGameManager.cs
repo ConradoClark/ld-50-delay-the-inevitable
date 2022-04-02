@@ -61,7 +61,7 @@ public class CardGameManager : MonoBehaviour
             yield return DrawCard().AsCoroutine();
             yield return ShowCardUI().AsCoroutine();
             yield return WaitForActionTriggered().AsCoroutine();
-            yield return HideCardUI().AsCoroutine(); // be careful with timing
+            yield return HideCardActions().AsCoroutine(); // be careful with timing
             yield return WaitForActionPerformed().AsCoroutine();
             while (IsGameActive)
             {
@@ -73,6 +73,11 @@ public class CardGameManager : MonoBehaviour
     private Routine ShowCardUI()
     {
         yield return CardUI.Show().AsCoroutine();
+    }
+
+    private Routine HideCardActions()
+    {
+        yield return CardUI.HideActions().AsCoroutine();
     }
 
     private Routine HideCardUI()
