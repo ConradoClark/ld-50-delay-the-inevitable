@@ -20,6 +20,7 @@ public class Toolbox : MonoBehaviour
     public CardDefaults CardDefaults;
     public ActionsManager ActionsManager;
     public StatsManager StatsManager;
+    public EffectsManager EffectsManager;
 
     private void OnEnable()
     {

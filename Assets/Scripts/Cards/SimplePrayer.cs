@@ -13,7 +13,7 @@ public class SimplePrayer : Card
     public override Routine PlayCard()
     {
         var action = Toolbox.Instance.ActionsManager.ButtonMashAction;
-        action.Activate(10, 
+        action.Activate(20, 
             Constants.InputActions.Clap, Constants.DefaultTimeLimit);
 
         while (action.Result==null)

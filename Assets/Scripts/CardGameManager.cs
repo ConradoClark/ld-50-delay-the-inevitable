@@ -83,7 +83,7 @@ public class CardGameManager : MonoBehaviour
                 yield return WaitForActionPerformed().AsCoroutine();
                 stats.IncreaseTurn();
                 yield return HideCardUI().AsCoroutine();
-                yield return TimeYields.WaitOneFrameX;
+                yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 1);
             }
         }
     }

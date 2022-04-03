@@ -11,9 +11,13 @@ public class ButtonMash : MonoBehaviour
     public int RequiredAmount;
     private int _buttonMashCount;
     public TMP_Text InstructionText;
+    public TMP_Text Counter;
     private InputAction _action;
     private bool _timeLimitExpired;
+    private bool _mashing;
     public bool? Result { get; private set; }
+
+    public SpriteRenderer Pressed;
 
     public void Activate(int requiredAmount, string requiredAction, double timeLimit)
     {
@@ -24,7 +28,8 @@ public class ButtonMash : MonoBehaviour
         _timeLimitExpired = false;
         Result = null;
 
-        Toolbox.Instance.CardGameManager.GameUI.SetTimer((int) timeLimit);
+        Counter.text = requiredAmount.ToString().PadLeft(3, '0');
+        Toolbox.Instance.CardGameManager.GameUI.SetTimer((int)timeLimit);
         Toolbox.Instance.MainMachinery.AddBasicMachine(55, HandleTimeLimit(timeLimit));
         Toolbox.Instance.MainMachinery.AddBasicMachine(56, HandleAction());
         Toolbox.Instance.MainMachinery.AddBasicMachine(57, FlashText());
@@ -51,6 +56,26 @@ public class ButtonMash : MonoBehaviour
         _timeLimitExpired = true;
     }
 
+
+    private Routine MashEffect()
+    {
+        if (_mashing) yield break;
+        _mashing = true;
+
+        for (var i = 0; i < 3; i++)
+        {
+            if (!Toolbox.Instance.EffectsManager.ButtonMashEffectPool.TryGetEffect(out var effect)) continue;
+            effect.transform.position = (Vector3)Random.insideUnitCircle * 0.3f + Pressed.transform.position;
+            effect.transform.Rotate(0, 0, Random.Range(0, 360));
+            effect.transform.localScale = new Vector3(2, 2, 1);
+        }
+
+        Pressed.enabled = true;
+        yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 0.1);
+        Pressed.enabled = false;
+        _mashing = false;
+    }
+
     private Routine HandleAction()
     {
         while (Result == null && isActiveAndEnabled)
@@ -58,7 +83,8 @@ public class ButtonMash : MonoBehaviour
             if (_action.WasPerformedThisFrame())
             {
                 _buttonMashCount++;
-                Debug.Log("button mashed, count: " + _buttonMashCount);
+                Counter.text = (RequiredAmount - _buttonMashCount).ToString().PadLeft(3, '0');
+                Toolbox.Instance.MainMachinery.AddBasicMachine(44, MashEffect());
             }
 
             if (_buttonMashCount >= RequiredAmount)
