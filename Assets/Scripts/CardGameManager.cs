@@ -97,7 +97,8 @@ public class CardGameManager : MonoBehaviour
 
     public void ReleaseCard(Card card)
     {
-        var cardPool = (StartingPool.Concat(FullPool ?? new List<CardDefinition>())).First(def => def.Name == card.Name);
+        // I should compare this to something other than the name...
+        var cardPool = StartingPool.Concat(FullPool ?? new List<CardDefinition>()).First(def => def.Name == card.OriginalName);
         cardPool.Pool.ReleaseCard(card);
         DrawnCard = null;
     }
@@ -205,13 +206,19 @@ public class CardGameManager : MonoBehaviour
         }
     }
 
-    private Routine AddCard(Card card, int index)
+    public Routine AddDrawnCardToDeck()
+    {
+        yield return AddCard(DrawnCard, 0, false).AsCoroutine();
+        DrawnCard = null;
+    }
+
+    private Routine AddCard(Card card, int index, bool doEffect = true)
     {
         CurrentDeck.Enqueue(card);
         OnDeckChanged?.Invoke(CurrentDeck.Count);
+        if (!doEffect) yield break;
 
-        float delay = (1f- Mathf.Clamp(index,0,10)*0.1f)*0.03f + 0.15f;
-
+        var delay = (1f- Mathf.Clamp(index,0,10)*0.1f)*0.03f + 0.15f;
         yield return card.SlideIntoDeck(delay).AsCoroutine();
     }
 

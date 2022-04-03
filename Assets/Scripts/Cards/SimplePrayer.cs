@@ -13,7 +13,7 @@ public class SimplePrayer : Card
     public override Routine PlayCard()
     {
         var action = Toolbox.Instance.ActionsManager.ButtonMashAction;
-        action.Activate(20, 
+        action.Activate(20*Level, // change to a different thing
             Constants.InputActions.Clap, Constants.DefaultTimeLimit);
 
         while (action.Result==null)
@@ -24,19 +24,7 @@ public class SimplePrayer : Card
         Debug.Log("There's a result: " + action.Result);
         // give rewards? do some animation?
 
-        if (action.Result == true)
-        {
-            foreach (var increase in StatIncreases)
-            {
-                   Toolbox.Instance.StatsManager.AddToStat(increase.Stat, increase.Amount);
-            }
-            SetResult(CardResult.Success);
-        }
-        else
-        {
-            // should failure have any consequences other than -1 card?
-            SetResult(CardResult.Failure);
-        }
+        SetResult(action.Result == true ? CardResult.Success : CardResult.Failure);
 
         Toolbox.Instance.CardGameManager.PerformAction();
     }
