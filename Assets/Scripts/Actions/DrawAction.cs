@@ -48,6 +48,7 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
         var strokes = 0;
         while (Result == null && isActiveAndEnabled)
         {
+            var noSpots = 0;
             var pressed = false;
             Vector3? previousInkPosition = null;
             // started holding
@@ -74,6 +75,7 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
                         var tempPos = Vector3.Lerp(previousInkPosition ?? pos, pos, i / (float)amountOfInk);
                         ink.transform.position = tempPos;
                         spots.Add(ink);
+                        noSpots++;
                     }
                     previousInkPosition = pos;
                 }
@@ -92,6 +94,7 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
             if (pressed)
             {
                 strokes++;
+                Debug.Log("number of spots: " + noSpots);
                 StrokesText.text = $"{_drawing.MaximumStrokes - strokes} stroke(s) left.";
                 // now, how do I test if the drawing is complete...
                 if (_drawing.IsComplete(spots))
