@@ -7,6 +7,7 @@ public class CardDefaults : MonoBehaviour
 {
     public Sprite BackFaceSprite;
     public Color PrayerCardColor;
+    public Color RitualCardColor;
     public Color BonusCardColor;
     public Color DefaultTextColor;
 
@@ -16,7 +17,8 @@ public class CardDefaults : MonoBehaviour
     {
         CardTypeColorMatch = new Dictionary<Card.CardType, Func<Color>>
         {
-            {Card.CardType.Prayer, () => PrayerCardColor}
+            {Card.CardType.Prayer, () => PrayerCardColor},
+            {Card.CardType.Ritual, () => RitualCardColor}
         };
     }
 
