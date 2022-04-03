@@ -15,10 +15,15 @@ public class GameUI : MonoBehaviour
     private int _timerCount;
     private bool _isTimerActive;
 
+    public TMP_Text HelpCaption;
+    public TMP_Text HelpText;
+
     void OnDisable()
     {
         Toolbox.Instance.StatsManager.OnTurnChanged -= StatsManager_OnTurnChanged;
         Toolbox.Instance.StatsManager.OnStatChanged -= StatsManager_OnStatChanged;
+        Toolbox.Instance.CardGameManager.OnDeckChanged -= CardGameManager_OnDeckChanged;
+        Toolbox.Instance.HelpManager.OnHelpUpdated -= HelpManager_OnHelpUpdated;
     }
 
     void OnEnable()
@@ -27,6 +32,14 @@ public class GameUI : MonoBehaviour
         Toolbox.Instance.StatsManager.OnTurnChanged += StatsManager_OnTurnChanged;
         Toolbox.Instance.StatsManager.OnStatChanged += StatsManager_OnStatChanged;
         Toolbox.Instance.CardGameManager.OnDeckChanged += CardGameManager_OnDeckChanged;
+        Toolbox.Instance.HelpManager.OnHelpUpdated += HelpManager_OnHelpUpdated;
+        HelpCaption.text = HelpText.text = "";
+    }
+
+    private void HelpManager_OnHelpUpdated(string caption, string description)
+    {
+        HelpCaption.text = caption;
+        HelpText.text = description;
     }
 
     private void CardGameManager_OnDeckChanged(int deckSize)
