@@ -22,6 +22,7 @@ public class Toolbox : MonoBehaviour
     public StatsManager StatsManager;
     public EffectsManager EffectsManager;
     public HelpManager HelpManager;
+    public ArtifactsManager ArtifactsManager;
 
     private void OnEnable()
     {

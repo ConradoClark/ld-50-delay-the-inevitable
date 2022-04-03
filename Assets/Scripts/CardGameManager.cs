@@ -65,6 +65,7 @@ public class CardGameManager : MonoBehaviour
         while (IsGameActive)
         {
             stats.Reset();
+            yield return Toolbox.Instance.ArtifactsManager.Reset().AsCoroutine();
             yield return GenerateDeck().AsCoroutine();
 
             while (IsGameActive)

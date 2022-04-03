@@ -39,15 +39,15 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     public string OriginalName { get; protected set; }
 
     [Serializable]
-    public class StatIncrease
+    public class StatQuantifier
     {
         public StatsManager.Stat Stat;
         public int Amount;
     }
 
-    public List<StatIncrease> StatIncreases;
-    public List<StatIncrease> TemporaryStatIncreases;
-    protected List<StatIncrease> OriginalStatIncreases;
+    public List<StatQuantifier> StatIncreases;
+    public List<StatQuantifier> TemporaryStatIncreases;
+    protected List<StatQuantifier> OriginalStatIncreases;
 
     public virtual Routine Draw()
     {
@@ -165,7 +165,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
 
     public void AddTemporaryCardReward()
     {
-        TemporaryStatIncreases.Add(new StatIncrease
+        TemporaryStatIncreases.Add(new StatQuantifier
         {
             Stat = StatsManager.Stat.Card,
             Amount = 1
@@ -176,7 +176,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     {
         _cardSprite = SpriteRenderer.sprite;
         _originalPosition = transform.position;
-        OriginalStatIncreases = new List<StatIncrease>(StatIncreases);
+        OriginalStatIncreases = new List<StatQuantifier>(StatIncreases);
         OriginalName = Name;
     }
 

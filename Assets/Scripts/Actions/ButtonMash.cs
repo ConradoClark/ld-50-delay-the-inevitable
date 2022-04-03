@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Licht.Impl.Orchestration;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class ButtonMash : MonoBehaviour
     private InputAction _action;
     private bool _timeLimitExpired;
     private bool _mashing;
+    private bool _isActionAllowed;
     public bool? Result { get; private set; }
 
     public SpriteRenderer Pressed;
@@ -26,6 +28,7 @@ public class ButtonMash : MonoBehaviour
         _buttonMashCount = 0;
         _action = Toolbox.Instance.MainInput.actions[requiredAction];
         _timeLimitExpired = false;
+        _isActionAllowed = Toolbox.Instance.ArtifactsManager.ArtifactReferences.Any(art => art.AllowsAction(requiredAction));
         Result = null;
 
         Counter.text = requiredAmount.ToString().PadLeft(3, '0');
@@ -78,11 +81,16 @@ public class ButtonMash : MonoBehaviour
 
     private Routine HandleAction()
     {
+        var effectiveness = Toolbox.Instance.ArtifactsManager
+            .ArtifactReferences.Select(art => art.ClappingEffectivenessModifier)
+            .DefaultIfEmpty(0)
+            .Max();
+
         while (Result == null && isActiveAndEnabled)
         {
-            if (_action.WasPerformedThisFrame())
+            if (_isActionAllowed && _action.WasPerformedThisFrame())
             {
-                _buttonMashCount++;
+                _buttonMashCount+= effectiveness+1;
                 Counter.text = (RequiredAmount - _buttonMashCount).ToString().PadLeft(3, '0');
                 Toolbox.Instance.MainMachinery.AddBasicMachine(44, MashEffect());
             }
