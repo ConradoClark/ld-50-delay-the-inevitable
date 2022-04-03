@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,16 +7,38 @@ using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generi
 
 public class Drawing : MonoBehaviour
 {
-    public Transform ColliderParent;
-    private Collider2D[] _colliders;
-
-    public void Activate()
+    [Serializable]
+    public class InkableCollider2D
     {
-        _colliders = ColliderParent.GetComponentsInChildren<Collider2D>();
+        public int AmountRequiredToPaint;
+        public Collider2D Collider;
     }
+
+    public int MaximumStrokes;
+    public InkableCollider2D[] Colliders;
 
     public bool Overlaps(Vector2 pos)
     {
-        return _colliders.Any(c => c.OverlapPoint(pos));
+        return Colliders.Any(c => c.Collider.OverlapPoint(pos));
+    }
+
+    public bool IsComplete(IEnumerable<Ink> spots)
+    {
+        // is this slow?
+        return Colliders.All(c =>
+        {
+            var amount = 0;
+            foreach (var spot in spots)
+            {
+                if (c.Collider.OverlapPoint(spot.transform.position))
+                {
+                    amount++;
+                }
+
+                if (amount >= c.AmountRequiredToPaint) return true;
+            }
+
+            return false;
+        });
     }
 }

@@ -20,16 +20,15 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
         _inkPool ??= new Dictionary<GameObject, ObjectPool<Ink>>();
         if (!_inkPool.ContainsKey(ink))
         {
-            _inkPool[ink]= new ObjectPool<Ink>(700, this);
+            _inkPool[ink] = new ObjectPool<Ink>(700, this);
             _inkPool[ink].Activate();
         }
 
         var obj = Instantiate(drawing, transform);
         _drawing = obj.GetComponent<Drawing>();
         if (_drawing == null) throw new Exception($"Object is not a drawing: {obj.name}");
-        _drawing.Activate();
 
-        _isActionAllowed = 
+        _isActionAllowed =
             Toolbox.Instance.ArtifactsManager.ArtifactReferences.Any(art => art.AllowsAction(Constants.InputActions.Press));
 
         base.ActivateDefaults(timeLimit);
@@ -38,20 +37,24 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
 
     private Routine HandleAction()
     {
+        var spots = new List<Ink>();
         var action = Toolbox.Instance.MainInput.actions[Constants.InputActions.Press];
         var mousePosValue = Toolbox.Instance.MainInput.actions[Constants.InputActions.MousePosition];
+        var strokes = 0;
         while (Result == null && isActiveAndEnabled)
         {
+            var pressed = false;
             Vector3? previousInkPosition = null;
             // started holding
             while (_isActionAllowed && action.IsPressed())
             {
+                pressed = true;
                 // begin creating ink objects
                 // validate colliders
-                
+
                 var mousePos = Toolbox.Instance.MainCamera.ScreenToWorldPoint(mousePosValue.ReadValue<Vector2>());
 
-                if ((previousInkPosition == null 
+                if ((previousInkPosition == null
                     || Vector2.Distance(mousePos, previousInkPosition.Value) > 0.03f)
                     )
                 {
@@ -63,23 +66,39 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
                     for (int i = 0; i < amountOfInk; i++)
                     {
                         if (!_inkPool[_ink].TryGetFromPool(out var ink)) continue;
-                        var tempPos = Vector3.Lerp(previousInkPosition ?? pos, pos, i / (float) amountOfInk);
+                        var tempPos = Vector3.Lerp(previousInkPosition ?? pos, pos, i / (float)amountOfInk);
                         ink.transform.position = tempPos;
+                        spots.Add(ink);
                     }
                     previousInkPosition = pos;
                 }
 
+                // Should this have a "grace" period? Should it have feedback?
                 if (!_drawing.Overlaps(mousePos))
                 {
-                    // is drawing outside mark
+                    _inkPool[_ink].ReleaseAll(); // get rid of all ink (this should be in one place honestly)
+                    Result = false;
+                    goto end;
                 }
 
                 yield return TimeYields.WaitOneFrameX;
-
-                // validate full drawing on release
             }
 
-            if (TimeLimitExpired)
+            if (pressed)
+            {
+                strokes++;
+
+                // now, how do I test if the drawing is complete...
+                if (_drawing.IsComplete(spots))
+                {
+                    _inkPool[_ink].ReleaseAll(); // get rid of all ink
+                    Result = true;
+                    break;
+                }
+            }
+
+            // no more chances
+            if (strokes >= _drawing.MaximumStrokes || TimeLimitExpired)
             {
                 _inkPool[_ink].ReleaseAll(); // get rid of all ink
                 Result = false;
@@ -89,6 +108,8 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
             yield return TimeYields.WaitOneFrameX;
         }
 
+        end:
+        Destroy(_drawing.gameObject); // maybe i should have a pool 
         yield return base.HandleActionEnd().AsCoroutine();
     }
 

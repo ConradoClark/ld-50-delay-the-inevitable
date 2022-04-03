@@ -104,5 +104,11 @@ MonoBehaviour:
   - Stat: 2
     Amount: 1
   TemporaryStatIncreases: []
-  Drawing: {fileID: 1321399550797728893, guid: 1d5a1b0a456cb56499dd4347bfe22045, type: 3}
+  Drawings:
+  - Level: 1
+    Drawing: {fileID: 1321399550797728893, guid: 1d5a1b0a456cb56499dd4347bfe22045, type: 3}
+  - Level: 1
+    Drawing: {fileID: 2635486410553417951, guid: ab2ec1ff325516645bade6dde801e972, type: 3}
+  - Level: 1
+    Drawing: {fileID: 6942577820836388723, guid: eb7a89939ab308149b7ec15a69301fd6, type: 3}
   Ink: {fileID: 3839337180198037677, guid: 9e125184587c4bf4d9e6374ed4ea5c82, type: 3}

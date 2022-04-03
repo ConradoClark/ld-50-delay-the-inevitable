@@ -195,7 +195,7 @@ public class CardGameManager : MonoBehaviour
     public Routine AddCardsToDeck(int amount)
     {
         var cards =
-            new WeightedDice<CardDefinition>(FullPool, new DefaultRandomGenerator());
+            new WeightedDice<CardDefinition>(StartingPool.Concat(FullPool), new DefaultRandomGenerator());
 
         for (var i = 0; i < amount; i++)
         {

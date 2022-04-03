@@ -68,7 +68,6 @@ public class ButtonMash : DefaultAction
             if (_buttonMashCount >= RequiredAmount)
             {
                 Result = true;
-                Toolbox.Instance.CardGameManager.GameUI.ResetTimer();
                 break;
             }
 

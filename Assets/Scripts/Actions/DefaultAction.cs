@@ -36,6 +36,7 @@ public class DefaultAction : MonoBehaviour
     }
     protected Routine HandleActionEnd()
     {
+        Toolbox.Instance.CardGameManager.GameUI.ResetTimer();
         gameObject.SetActive(false);
         yield break;
     }

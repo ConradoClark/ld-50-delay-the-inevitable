@@ -6428,7 +6428,7 @@ MonoBehaviour:
   StartingPool:
   - Name: Simple Prayer
     Pool: {fileID: 1916366540}
-    weight: 1
+    weight: 0
   - Name: Signature
     Pool: {fileID: 1781563841}
     weight: 1
