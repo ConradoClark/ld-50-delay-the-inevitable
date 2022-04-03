@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Licht.Impl.Orchestration;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
@@ -37,6 +38,8 @@ public class ArtifactsManager : MonoBehaviour
     public event OnArtifactListChangedEvent OnArtifactListChanged;
 
     public List<ArtifactLearningRequirements> LearnTable; // shouldn't be written anywhere I think. Make the player figure out.
+
+    public TMP_Text ArtifactGainedText;
 
     public Routine Reset()
     {
@@ -84,11 +87,11 @@ public class ArtifactsManager : MonoBehaviour
     {
         return from learningCondition in LearnTable where !CurrentArtifacts.Contains(learningCondition.Key) let shouldLearn = learningCondition.Requirements.All(r =>
             Toolbox.Instance.StatsManager.Stats.ContainsKey(r.Stat) &&
-            Toolbox.Instance.StatsManager.Stats[r.Stat] >= r.Amount) where shouldLearn select AddArtifact(learningCondition.Key).AsCoroutine();
+            Toolbox.Instance.StatsManager.Stats[r.Stat] >= r.Amount) where shouldLearn select AddArtifact(learningCondition.Key, true).AsCoroutine();
     }
 
     // should this be public?
-    public Routine AddArtifact(ArtifactEnum artifact)
+    public Routine AddArtifact(ArtifactEnum artifact, bool learned=false)
     {
         var artDefinition = ArtifactDefinitions.FirstOrDefault(art => art.Key == artifact);
         if (artDefinition==null) throw new Exception($"Artifact definition not found: {artifact}"); // just in case I forget to update the definitions
@@ -97,11 +100,39 @@ public class ArtifactsManager : MonoBehaviour
         var obj = Instantiate(artDefinition.Artifact, transform);
         obj.transform.localPosition = new Vector3((CurrentArtifacts.Count % 5) * -0.5f,
             Mathf.FloorToInt(CurrentArtifacts.Count / 5f)*-0.5f, 0);
-        // TODO: maybe some effects later
+
+        var artifactComponent = obj.GetComponent<Artifact>();
+        if (learned)
+        {
+            Toolbox.Instance.MainMachinery.AddBasicMachine(83, FlashArtifactText(artifactComponent.Name));
+        }
 
         CurrentArtifacts.Add(artifact);
-        ArtifactReferences.Add(obj.GetComponent<Artifact>());
+        ArtifactReferences.Add(artifactComponent);
         yield break;
+    }
+
+
+    private bool _flashingArtifactText;
+    private Routine FlashArtifactText(string artifact)
+    {
+        while (_flashingArtifactText) yield return TimeYields.WaitOneFrameX;
+
+        var text = $"Gained Artifact: {artifact}";
+        _flashingArtifactText = true;
+        ArtifactGainedText.enabled = true;
+        ArtifactGainedText.text = text;
+
+        for (var i = 0; i < 15; i++)
+        {
+            yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 0.06);
+            ArtifactGainedText.text = "";
+            yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 0.06);
+            ArtifactGainedText.text = text;
+        }
+
+        ArtifactGainedText.enabled = false;
+        _flashingArtifactText = false;
     }
 }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Artifact : MonoBehaviour
 {
+    public string Name;
     // maybe they could have props that are checked by actions?
     // this can be super hardcoded for all I care
     public bool AllowsClapping;

@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91ed8f1c452f6a84d95fc8050fb92a5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Name: Solemnity
   AllowsClapping: 0
   AllowsDrawing: 0
   ClappingEffectivenessModifier: 1
