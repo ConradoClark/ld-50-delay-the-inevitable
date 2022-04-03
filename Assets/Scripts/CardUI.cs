@@ -23,6 +23,9 @@ public class CardUI : MonoBehaviour
     private TMP_Text[] _texts;
     private SpriteRenderer[] _sprites;
 
+    public ActionButton BurnButton;
+    public ActionButton SkipButton;
+
     public Routine Show()
     {
         this.gameObject.SetActive(true);
@@ -30,6 +33,14 @@ public class CardUI : MonoBehaviour
 
         var card = Toolbox.Instance.CardGameManager.DrawnCard;
         if (card == null) yield break; // should never happen
+
+        if (card.CanSkip()) SkipButton.UnblockButton();
+        else SkipButton.BlockButton("This card has reached its maximum level.");
+        
+        if (card.CanBurn()) BurnButton.UnblockButton();
+        else BurnButton.BlockButton("This function is still unimplemented");
+
+
         CardName.text = card.Name;
         CardName.color = Toolbox.Instance.CardDefaults.CardTypeColorMatch.ContainsKey(card.Type)
             ? Toolbox.Instance.CardDefaults.CardTypeColorMatch[card.Type]()

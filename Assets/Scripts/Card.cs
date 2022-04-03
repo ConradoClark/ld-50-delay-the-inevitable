@@ -37,6 +37,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     private Vector3? _originalPosition;
     protected int Level = 1;
     public string OriginalName { get; protected set; }
+    public int MaxLevel = 1;
 
     [Serializable]
     public class StatQuantifier
@@ -48,6 +49,16 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     public List<StatQuantifier> StatIncreases;
     public List<StatQuantifier> TemporaryStatIncreases;
     protected List<StatQuantifier> OriginalStatIncreases;
+
+    public bool CanSkip()
+    {
+        return Level < MaxLevel;
+    }
+
+    public bool CanBurn()
+    {
+        return false;
+    }
 
     public virtual Routine Draw()
     {

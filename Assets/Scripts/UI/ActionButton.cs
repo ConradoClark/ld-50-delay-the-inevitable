@@ -8,10 +8,30 @@ public class ActionButton : MonoBehaviour
 {
     public Collider2D Collider;
     private bool _hasClicked;
+
+    public Transform ButtonBlock;
+    public HelpContext HelpContext;
+
+    private string _originalHelpDescription;
+
     void OnEnable()
     {
         _hasClicked = false;
         Toolbox.Instance.MainMachinery.AddBasicMachine(33, HandleClick());
+        _originalHelpDescription = HelpContext.Description;
+    }
+
+    public void UnblockButton()
+    {
+        if (ButtonBlock == null) return;
+        ButtonBlock.gameObject.SetActive(false);
+    }
+
+    public void BlockButton(string reason)
+    {
+        if (ButtonBlock == null) return;
+        ButtonBlock.gameObject.SetActive(true);
+        HelpContext.Description = reason;
     }
 
     private Routine HandleClick()

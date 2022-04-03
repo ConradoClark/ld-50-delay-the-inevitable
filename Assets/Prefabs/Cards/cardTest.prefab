@@ -100,6 +100,7 @@ MonoBehaviour:
   Type: 0
   Description: Clap your hands as fervorously as you can
   Requirements: Requires Clapping
+  MaxLevel: 3
   StatIncreases:
   - Stat: 1
     Amount: 1
