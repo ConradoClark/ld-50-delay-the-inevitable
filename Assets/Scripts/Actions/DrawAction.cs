@@ -4,6 +4,7 @@ using System.Linq;
 using Licht.Impl.Orchestration;
 using Licht.Impl.Pooling;
 using Licht.Interfaces.Pooling;
+using TMPro;
 using UnityEngine;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
 
@@ -14,6 +15,8 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
 
     private bool _isActionAllowed;
     private GameObject _ink;
+
+    public TMP_Text StrokesText;
     public void Activate(GameObject drawing, GameObject ink, int timeLimit)
     {
         _ink = ink;
@@ -33,6 +36,8 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
 
         base.ActivateDefaults(timeLimit);
         Toolbox.Instance.MainMachinery.AddBasicMachine(56, HandleAction());
+
+        StrokesText.text = $"{_drawing.MaximumStrokes} stroke(s) left.";
     }
 
     private Routine HandleAction()
@@ -87,7 +92,7 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
             if (pressed)
             {
                 strokes++;
-
+                StrokesText.text = $"{_drawing.MaximumStrokes - strokes} stroke(s) left.";
                 // now, how do I test if the drawing is complete...
                 if (_drawing.IsComplete(spots))
                 {
