@@ -6,6 +6,7 @@ public class PlayButton : ActionButton
 {
     protected override Routine HandleAction()
     {
+        Toolbox.Instance.CardGameManager.RegisterPlayedCard();
         yield return Toolbox.Instance.CardGameManager.DrawnCard.Play().AsCoroutine();
     }
 }

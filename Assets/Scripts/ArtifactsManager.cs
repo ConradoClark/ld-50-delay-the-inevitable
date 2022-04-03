@@ -40,6 +40,11 @@ public class ArtifactsManager : MonoBehaviour
 
     public Routine Reset()
     {
+        foreach (var art in ArtifactReferences ?? new List<Artifact>())
+        {
+            Destroy(art.gameObject);
+        }
+
         CurrentArtifacts = new List<ArtifactEnum>();
         ArtifactReferences = new List<Artifact>();
         foreach (var artifact in StartingArtifacts)
@@ -52,6 +57,22 @@ public class ArtifactsManager : MonoBehaviour
     void OnEnable()
     {
         Toolbox.Instance.StatsManager.OnStatChanged += StatsManager_OnStatChanged;
+    }
+
+    public void ShowArtifacts()
+    {
+        foreach (var art in ArtifactReferences)
+        {
+            art.gameObject.SetActive(true);
+        }
+    }
+
+    public void HideArtifacts()
+    {
+        foreach (var art in ArtifactReferences)
+        {
+            art.gameObject.SetActive(false);
+        }
     }
 
     private void StatsManager_OnStatChanged(StatsManager.Stat stat, int value)

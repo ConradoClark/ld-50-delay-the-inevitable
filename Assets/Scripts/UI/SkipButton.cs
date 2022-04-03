@@ -6,6 +6,7 @@ public class SkipButton : ActionButton
 {
     protected override Routine HandleAction()
     {
+        Toolbox.Instance.CardGameManager.RegisterSkippedCard();
         yield return Toolbox.Instance.CardGameManager.DrawnCard.Skip().AsCoroutine();
     }
 }

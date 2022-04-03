@@ -43,6 +43,7 @@ public class StatsManager : MonoBehaviour, IResettable
         foreach (var stat in Stats.Keys.ToArray())
         {
             Stats[stat] = 1;
+            OnStatChanged?.Invoke(stat, Stats[stat]);
         }
         OnTurnChanged?.Invoke(CurrentTurn);
         

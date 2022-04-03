@@ -33,7 +33,7 @@ public class HelpManager : MonoBehaviour
 
             foreach (var help in _helpContexts)
             {
-                if (help.Collider.OverlapPoint(mousePos))
+                if (help.Collider!= null && help.Collider.OverlapPoint(mousePos))
                 {
                     OnHelpUpdated?.Invoke(help.Name, help.Description);
                     currentCollider = help.Collider;

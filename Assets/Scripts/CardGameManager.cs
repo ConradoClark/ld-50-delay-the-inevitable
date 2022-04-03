@@ -27,13 +27,20 @@ public class CardGameManager : MonoBehaviour
     public Card DrawnCard;
     public CardUI CardUI;
     public GameUI GameUI;
+    public EndingUI EndingUI;
 
     private bool _hitEndGameTrigger;
     private bool _actionTriggered;
     private bool _actionPerformed;
     private bool _addCardToNextReward;
 
+    private int _playedCards;
+    private int _skippedCards;
+    private int _burntCards;
+
     public event OnDeckChangedEvent OnDeckChanged;
+
+    public Ending EndingAsterisk;
 
     public class DefaultRandomGenerator : IGenerator<int, float>
     {
@@ -64,6 +71,7 @@ public class CardGameManager : MonoBehaviour
         var stats = Toolbox.Instance.StatsManager;
         while (IsGameActive)
         {
+            ResetCounters();
             stats.Reset();
             yield return Toolbox.Instance.ArtifactsManager.Reset().AsCoroutine();
             yield return GenerateDeck().AsCoroutine();
@@ -74,8 +82,7 @@ public class CardGameManager : MonoBehaviour
 
                 if (_hitEndGameTrigger)
                 {
-                    Debug.Log("game over, show results, etc.");
-                    IsGameActive = false;
+                    yield return ShowEnding().AsCoroutine();
                     break;
                 }
 
@@ -89,6 +96,70 @@ public class CardGameManager : MonoBehaviour
                 yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 0.25);
             }
         }
+    }
+    
+    private Routine ShowEnding()
+    {
+        var ending = GetEnding();
+        ending.gameObject.SetActive(true);
+        ending.transform.parent.gameObject.SetActive(true); // lazy
+        
+        GameUI.gameObject.SetActive(false);
+        Toolbox.Instance.ArtifactsManager.HideArtifacts();
+
+        var flash = EndingUI.FlashBackground().AsCoroutine();
+        var stats = ShowEndingStats(ending).AsCoroutine();
+
+        yield return flash.Combine(stats);
+        yield return EndingUI.WaitForClickOnRestart().AsCoroutine();
+
+        _hitEndGameTrigger = false;
+        GameUI.gameObject.SetActive(true);
+        Toolbox.Instance.ArtifactsManager.ShowArtifacts();
+        ending.gameObject.SetActive(false);
+        ending.transform.parent.gameObject.SetActive(false); // lazy
+    }
+
+    private Routine ShowEndingStats(Ending ending)
+    {
+        EndingUI.Ending.text = ending.Name;
+        EndingUI.Turns.text = Toolbox.Instance.StatsManager.CurrentTurn.ToString().PadLeft(3, '0');
+        EndingUI.Faith.text = Toolbox.Instance.StatsManager.Stats[StatsManager.Stat.Faith]
+            .ToString().PadLeft(2, '0');
+        EndingUI.Sorcery.text = Toolbox.Instance.StatsManager.Stats[StatsManager.Stat.Faith]
+            .ToString().PadLeft(2, '0');
+
+        EndingUI.Artifacts.text = Toolbox.Instance.ArtifactsManager.CurrentArtifacts.Count
+            .ToString().PadLeft(2, '0');
+
+        EndingUI.CardsPlayed.text = _playedCards.ToString().PadLeft(3, '0');
+        EndingUI.CardsBurnt.text = _burntCards.ToString().PadLeft(3, '0');
+        EndingUI.CardsSkipped.text = _skippedCards.ToString().PadLeft(3, '0');
+        yield break;
+    }
+
+    private Ending GetEnding()
+    {
+        // Ending *: <30 turns - ended too quick, 
+        if (Toolbox.Instance.StatsManager.CurrentTurn < 30) return EndingAsterisk;
+
+        // Ending A: blablabla
+        return EndingAsterisk;
+    }
+
+    public void RegisterPlayedCard()
+    {
+        _playedCards++;
+    }
+
+    public void RegisterSkippedCard()
+    {
+        _skippedCards++;
+    }
+
+    private void ResetCounters()
+    {
+        _playedCards = _skippedCards = _burntCards = 0;
     }
 
     public void AddCardToNextReward()
