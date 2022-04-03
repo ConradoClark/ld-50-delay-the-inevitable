@@ -7,58 +7,28 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
 
-public class ButtonMash : MonoBehaviour
+public class ButtonMash : DefaultAction
 {
     public int RequiredAmount;
     private int _buttonMashCount;
-    public TMP_Text InstructionText;
     public TMP_Text Counter;
     private InputAction _action;
-    private bool _timeLimitExpired;
     private bool _mashing;
     private bool _isActionAllowed;
-    public bool? Result { get; private set; }
 
     public SpriteRenderer Pressed;
 
-    public void Activate(int requiredAmount, string requiredAction, double timeLimit)
+    public void Activate(int requiredAmount, string requiredAction, int timeLimit)
     {
-        gameObject.SetActive(true);
+        base.ActivateDefaults(timeLimit);
         RequiredAmount = requiredAmount;
         _buttonMashCount = 0;
         _action = Toolbox.Instance.MainInput.actions[requiredAction];
-        _timeLimitExpired = false;
         _isActionAllowed = Toolbox.Instance.ArtifactsManager.ArtifactReferences.Any(art => art.AllowsAction(requiredAction));
-        Result = null;
 
         Counter.text = requiredAmount.ToString().PadLeft(3, '0');
-        Toolbox.Instance.CardGameManager.GameUI.SetTimer((int)timeLimit);
-        Toolbox.Instance.MainMachinery.AddBasicMachine(55, HandleTimeLimit(timeLimit));
         Toolbox.Instance.MainMachinery.AddBasicMachine(56, HandleAction());
-        Toolbox.Instance.MainMachinery.AddBasicMachine(57, FlashText());
     }
-
-    private Routine FlashText()
-    {
-        var originalText = InstructionText.text;
-        while (isActiveAndEnabled)
-        {
-            yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 0.1);
-            InstructionText.text = "";
-            yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 0.1);
-            InstructionText.text = originalText;
-        }
-
-        InstructionText.text = originalText;
-    }
-
-    private Routine HandleTimeLimit(double timeLimit)
-    {
-        yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, timeLimit,
-            breakCondition: () => Result != null || !isActiveAndEnabled);
-        _timeLimitExpired = true;
-    }
-
 
     private Routine MashEffect()
     {
@@ -102,7 +72,7 @@ public class ButtonMash : MonoBehaviour
                 break;
             }
 
-            if (_timeLimitExpired)
+            if (TimeLimitExpired)
             {
                 Result = false;
                 break;
@@ -111,6 +81,6 @@ public class ButtonMash : MonoBehaviour
             yield return TimeYields.WaitOneFrameX;
         }
 
-        gameObject.SetActive(false);
+        yield return base.HandleActionEnd().AsCoroutine();
     }
 }

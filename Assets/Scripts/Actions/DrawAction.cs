@@ -1,0 +1,100 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Licht.Impl.Orchestration;
+using Licht.Impl.Pooling;
+using Licht.Interfaces.Pooling;
+using UnityEngine;
+using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
+
+public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
+{
+    private Drawing _drawing;
+    private Dictionary<GameObject, ObjectPool<Ink>> _inkPool;
+
+    private bool _isActionAllowed;
+    private GameObject _ink;
+    public void Activate(GameObject drawing, GameObject ink, int timeLimit)
+    {
+        _ink = ink;
+        _inkPool ??= new Dictionary<GameObject, ObjectPool<Ink>>();
+        if (!_inkPool.ContainsKey(ink))
+        {
+            _inkPool[ink]= new ObjectPool<Ink>(700, this);
+            _inkPool[ink].Activate();
+        }
+
+        var obj = Instantiate(drawing, transform);
+        _drawing = obj.GetComponent<Drawing>();
+        if (_drawing == null) throw new Exception($"Object is not a drawing: {obj.name}");
+        _drawing.Activate();
+
+        _isActionAllowed = 
+            Toolbox.Instance.ArtifactsManager.ArtifactReferences.Any(art => art.AllowsAction(Constants.InputActions.Press));
+
+        base.ActivateDefaults(timeLimit);
+        Toolbox.Instance.MainMachinery.AddBasicMachine(56, HandleAction());
+    }
+
+    private Routine HandleAction()
+    {
+        var action = Toolbox.Instance.MainInput.actions[Constants.InputActions.Press];
+        var mousePosValue = Toolbox.Instance.MainInput.actions[Constants.InputActions.MousePosition];
+        while (Result == null && isActiveAndEnabled)
+        {
+            Vector3? previousInkPosition = null;
+            // started holding
+            while (_isActionAllowed && action.IsPressed())
+            {
+                // begin creating ink objects
+                // validate colliders
+                
+                var mousePos = Toolbox.Instance.MainCamera.ScreenToWorldPoint(mousePosValue.ReadValue<Vector2>());
+
+                if ((previousInkPosition == null 
+                    || Vector2.Distance(mousePos, previousInkPosition.Value) > 0.03f)
+                    )
+                {
+                    var amountOfInk = previousInkPosition == null ? 1 :
+                        Mathf.CeilToInt(Vector2.Distance(mousePos, previousInkPosition.Value) / 0.1f);
+
+                    var pos = new Vector3(mousePos.x, mousePos.y, 0);
+
+                    for (int i = 0; i < amountOfInk; i++)
+                    {
+                        if (!_inkPool[_ink].TryGetFromPool(out var ink)) continue;
+                        var tempPos = Vector3.Lerp(previousInkPosition ?? pos, pos, i / (float) amountOfInk);
+                        ink.transform.position = tempPos;
+                    }
+                    previousInkPosition = pos;
+                }
+
+                if (!_drawing.Overlaps(mousePos))
+                {
+                    // is drawing outside mark
+                }
+
+                yield return TimeYields.WaitOneFrameX;
+
+                // validate full drawing on release
+            }
+
+            if (TimeLimitExpired)
+            {
+                _inkPool[_ink].ReleaseAll(); // get rid of all ink
+                Result = false;
+                break;
+            }
+
+            yield return TimeYields.WaitOneFrameX;
+        }
+
+        yield return base.HandleActionEnd().AsCoroutine();
+    }
+
+    public Ink Instantiate()
+    {
+        var ink = Instantiate(_ink, transform);
+        return ink.GetComponent<Ink>();
+    }
+}

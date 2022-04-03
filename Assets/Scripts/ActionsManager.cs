@@ -5,4 +5,5 @@ using UnityEngine;
 public class ActionsManager : MonoBehaviour
 {
     public ButtonMash ButtonMashAction;
+    public DrawAction DrawAction;
 }

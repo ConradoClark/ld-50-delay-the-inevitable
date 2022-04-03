@@ -10,11 +10,12 @@ public class Artifact : MonoBehaviour
     public bool AllowsDrawing;
     public int ClappingEffectivenessModifier;
 
-    public bool AllowsAction(string action)
+    public bool AllowsAction(string action) // this is a bit sketchy
     {
         return action switch
         {
             Constants.InputActions.Clap => AllowsClapping,
+            Constants.InputActions.Press => AllowsDrawing,
             _ => false
         };
     }
