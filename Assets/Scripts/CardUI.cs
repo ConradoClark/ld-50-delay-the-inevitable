@@ -13,6 +13,8 @@ public class CardUI : MonoBehaviour
     public TMP_Text CardDescription;
     public TMP_Text CardRequirements;
 
+    public TMP_Text CardResultFeedback;
+
     public Transform StatsGroup;
     public TMP_Text FaithIncrease;
     public TMP_Text SorceryIncrease;
@@ -133,5 +135,31 @@ public class CardUI : MonoBehaviour
     {
         this.gameObject.SetActive(false);
         yield break;
+    }
+
+    public Routine ShowSuccessMessage()
+    {
+        CardResultFeedback.color = Color.black;
+        CardResultFeedback.text = "SUCCESS!";
+        yield break;
+    }
+
+    public Routine ShowFailureMessage()
+    {
+        CardResultFeedback.color = Color.black;
+        CardResultFeedback.text = "FAILURE...";
+        yield break;
+    }
+
+    public Routine HideResultMessage()
+    {
+        var fade = EasingYields.Lerp(
+            f => CardResultFeedback.color =
+                new Color(CardResultFeedback.color.r, CardResultFeedback.color.g, CardResultFeedback.color.b, f),
+            () => CardResultFeedback.color.a, 0.3f,
+            0f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+
+        yield return fade;
+        CardResultFeedback.text = "";
     }
 }

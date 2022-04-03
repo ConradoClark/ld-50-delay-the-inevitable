@@ -90,7 +90,11 @@ public abstract class Card : MonoBehaviour, IPoolableObject
                     Toolbox.Instance.StatsManager.AddToStat(increase.Stat, increase.Amount);
                 }
                 if (!tempCardIncreases.Any()) Toolbox.Instance.CardGameManager.AddCardToNextReward();
-                yield return SuccessEffect().AsCoroutine();
+
+                var successMessage = Toolbox.Instance.CardGameManager.CardUI.ShowSuccessMessage().AsCoroutine();
+                var success= SuccessEffect().AsCoroutine();
+
+                yield return success.Combine(successMessage);
 
                 if (cardIncreases > 0)
                 {
@@ -98,11 +102,15 @@ public abstract class Card : MonoBehaviour, IPoolableObject
                 }
                 break;
             case CardResult.Failure:
-                yield return FailureEffect().AsCoroutine();
+                var failureMessage = Toolbox.Instance.CardGameManager.CardUI.ShowFailureMessage().AsCoroutine();
+                var failure = FailureEffect().AsCoroutine();
+                yield return failure.Combine(failureMessage);
                 break;
             default: break;
         }
 
+        Toolbox.Instance.MainMachinery.AddBasicMachine(88,
+            Toolbox.Instance.CardGameManager.CardUI.HideResultMessage().AsCoroutine());
         TemporaryStatIncreases.Clear();
         Toolbox.Instance.CardGameManager.ReleaseCard(this);
     }
