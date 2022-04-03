@@ -541,6 +541,7 @@ GameObject:
   - component: {fileID: 310362497}
   - component: {fileID: 310362496}
   - component: {fileID: 310362495}
+  - component: {fileID: 310362498}
   m_Layer: 0
   m_Name: BurnButton
   m_TagString: Untagged
@@ -653,6 +654,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &310362498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 310362493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b37a511a7c3dd5d4aa57ad7f56d4cfe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Burn
+  Description: Sacrifice a sliver of your remaining sanity. Destroy a card, for a
+    cost.
+  Collider: {fileID: 310362495}
 --- !u!1 &351029687
 GameObject:
   m_ObjectHideFlags: 0
@@ -2426,7 +2443,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &774466649
 Transform:
   m_ObjectHideFlags: 0
@@ -2467,6 +2484,7 @@ MonoBehaviour:
   SorceryIncrease: {fileID: 1394549138}
   CardIncrease: {fileID: 1165102961}
   CardBonusSign: {fileID: 1548091804}
+  CardBonusSignCollider: {fileID: 1548091807}
 --- !u!1 &783714609
 GameObject:
   m_ObjectHideFlags: 0
@@ -4334,7 +4352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Skip
-  Description: Delay the inevitable.
+  Description: Delay the inevitable. Strengthen cards.
   Collider: {fileID: 1191281784}
 --- !u!1 &1308374514
 GameObject:
@@ -4894,7 +4912,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Play
-  Description: Bargain your fate.
+  Description: Bargain your fate. Accept their call.
   Collider: {fileID: 1491946408}
 --- !u!1 &1514147395
 GameObject:
@@ -5022,6 +5040,8 @@ GameObject:
   - component: {fileID: 1548091803}
   - component: {fileID: 1548091805}
   - component: {fileID: 1548091804}
+  - component: {fileID: 1548091807}
+  - component: {fileID: 1548091806}
   m_Layer: 0
   m_Name: CardsBonus
   m_TagString: Untagged
@@ -5181,6 +5201,48 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1548091806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1548091802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b37a511a7c3dd5d4aa57ad7f56d4cfe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Blessing of the Stars
+  Description: Every other successfully played card adds a card reward to the next
+    card.
+  Collider: {fileID: 1548091807}
+--- !u!61 &1548091807
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1548091802}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.28219795, y: 0.03856249}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.31906557, y: 0.24833333}
+  m_EdgeRadius: 0
 --- !u!1 &1575861375
 GameObject:
   m_ObjectHideFlags: 0
@@ -5733,9 +5795,9 @@ MonoBehaviour:
   m_fontSize: 3
   m_fontSizeBase: 3
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 2
+  m_fontSizeMax: 3
   m_fontStyle: 1
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
@@ -5766,7 +5828,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -1.1880445, y: 0, z: 0.109838486, w: 0}
+  m_margin: {x: -1.1670432, y: 0, z: 0.06783581, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

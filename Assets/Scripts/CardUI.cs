@@ -18,6 +18,7 @@ public class CardUI : MonoBehaviour
     public TMP_Text SorceryIncrease;
     public TMP_Text CardIncrease;
     public TMP_Text CardBonusSign;
+    public Collider2D CardBonusSignCollider; // tweak
 
     private TMP_Text[] _texts;
     private SpriteRenderer[] _sprites;
@@ -108,6 +109,7 @@ public class CardUI : MonoBehaviour
             : Toolbox.Instance.CardDefaults.DefaultTextColor;
 
         CardBonusSign.enabled = hasBonusCard;
+        CardBonusSignCollider.enabled = hasBonusCard;
     }
 
     public Routine HideActions()
