@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Licht.Impl.Orchestration;
 using Licht.Interfaces.Pooling;
 using UnityEngine;
@@ -29,8 +30,10 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     public string Name;
     public CardType Type;
     public string Description;
+    public string Requirements;
     private Sprite _cardSprite;
     private CardResult _result;
+    private Vector3? _originalPosition;
 
     [Serializable]
     public class StatIncrease
@@ -40,6 +43,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
     }
 
     public List<StatIncrease> StatIncreases;
+    public List<StatIncrease> TemporaryStatIncreases;
 
     public virtual Routine Draw()
     {
@@ -56,10 +60,22 @@ public abstract class Card : MonoBehaviour, IPoolableObject
         yield return PlayEffect().AsCoroutine();
         yield return PlayCard().AsCoroutine();
 
+        var tempCardIncreases = TemporaryStatIncreases.Where(stat => stat.Stat == StatsManager.Stat.Card).ToArray();
+
         switch (_result)
         {
             case CardResult.Success:
+                foreach (var tempInc in TemporaryStatIncreases.Where(stat => stat.Stat != StatsManager.Stat.Card))
+                {
+                    Toolbox.Instance.StatsManager.AddToStat(tempInc.Stat, tempInc.Amount);
+                }
+                if (!tempCardIncreases.Any()) Toolbox.Instance.CardGameManager.AddCardToNextReward();
                 yield return SuccessEffect().AsCoroutine();
+                foreach (var tempInc in tempCardIncreases)
+                {
+                    if (tempInc.Stat == StatsManager.Stat.Card)
+                        yield return Toolbox.Instance.CardGameManager.AddCardsToDeck(tempInc.Amount).AsCoroutine();
+                }
                 break;
             case CardResult.Failure:
                 yield return FailureEffect().AsCoroutine();
@@ -67,12 +83,23 @@ public abstract class Card : MonoBehaviour, IPoolableObject
             default: break;
         }
 
+        TemporaryStatIncreases.Clear();
         Toolbox.Instance.CardGameManager.ReleaseCard(this);
+    }
+
+    public void AddTemporaryCardReward()
+    {
+        TemporaryStatIncreases.Add(new StatIncrease
+        {
+            Stat = StatsManager.Stat.Card,
+            Amount=1
+        });
     }
 
     public void Initialize()
     {
         _cardSprite = SpriteRenderer.sprite;
+        _originalPosition = transform.position;
     }
 
     public bool IsActive { get; set; }
@@ -88,6 +115,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
 
     public bool Activate()
     {
+        if (_originalPosition != null) transform.position = _originalPosition.Value;
         gameObject.SetActive(true);
         IsActive = true;
         SpriteRenderer.sprite = Toolbox.Instance.CardDefaults.BackFaceSprite;

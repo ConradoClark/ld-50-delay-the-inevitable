@@ -11,10 +11,13 @@ public class CardUI : MonoBehaviour
     public Transform ActionsGroup;
     public TMP_Text CardName;
     public TMP_Text CardDescription;
+    public TMP_Text CardRequirements;
 
     public Transform StatsGroup;
     public TMP_Text FaithIncrease;
     public TMP_Text SorceryIncrease;
+    public TMP_Text CardIncrease;
+    public TMP_Text CardBonusSign;
 
     private TMP_Text[] _texts;
     private SpriteRenderer[] _sprites;
@@ -27,13 +30,26 @@ public class CardUI : MonoBehaviour
         var card = Toolbox.Instance.CardGameManager.DrawnCard;
         if (card == null) yield break; // should never happen
         CardName.text = card.Name;
+        CardName.color = Toolbox.Instance.CardDefaults.CardTypeColorMatch.ContainsKey(card.Type)
+            ? Toolbox.Instance.CardDefaults.CardTypeColorMatch[card.Type]()
+            : Toolbox.Instance.CardDefaults.DefaultTextColor;
+
         CardDescription.text = card.Description;
+        CardRequirements.text = card.Requirements;
+        CardRequirements.color = Toolbox.Instance.CardDefaults.CardTypeColorMatch.ContainsKey(card.Type)
+            ? Toolbox.Instance.CardDefaults.CardTypeColorMatch[card.Type]()
+            : Toolbox.Instance.CardDefaults.DefaultTextColor;
 
         var faithIncrease = GetStatIncrease(StatsManager.Stat.Faith, card);
         FaithIncrease.text = faithIncrease.ToString().PadLeft(2, '0');
 
         var sorceryIncrease = GetStatIncrease(StatsManager.Stat.Sorcery, card);
         SorceryIncrease.text = sorceryIncrease.ToString().PadLeft(2, '0');
+
+        var cardIncrease = GetStatIncrease(StatsManager.Stat.Card, card);
+        CardIncrease.text = cardIncrease.ToString().PadLeft(2, '0');
+
+        AdjustCardIncreasesText(card);
 
         var targetX = StatsGroup.position.x;
         StatsGroup.position = new Vector3(StatsGroup.position.x + 0.5f, StatsGroup.position.y, StatsGroup.position.z);
@@ -77,7 +93,21 @@ public class CardUI : MonoBehaviour
 
     private int GetStatIncrease(StatsManager.Stat stat, Card card)
     {
-        return (card.StatIncreases.FirstOrDefault(s => s.Stat == stat)?.Amount ?? 0);
+        return card.StatIncreases.Concat(card.TemporaryStatIncreases)
+            .Where(s => s.Stat == stat)
+            .Select(s=>s.Amount)
+            .DefaultIfEmpty(0)
+            .Sum();
+    }
+
+    private void AdjustCardIncreasesText(Card card)
+    {
+        var hasBonusCard = card.TemporaryStatIncreases.Any(stat => stat.Stat == StatsManager.Stat.Card && stat.Amount > 0);
+        CardBonusSign.color = CardIncrease.color = hasBonusCard
+            ? Toolbox.Instance.CardDefaults.BonusCardColor
+            : Toolbox.Instance.CardDefaults.DefaultTextColor;
+
+        CardBonusSign.enabled = hasBonusCard;
     }
 
     public Routine HideActions()

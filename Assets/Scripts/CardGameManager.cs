@@ -31,6 +31,7 @@ public class CardGameManager : MonoBehaviour
     private bool _hitEndGameTrigger;
     private bool _actionTriggered;
     private bool _actionPerformed;
+    private bool _addCardToNextReward;
 
     public event OnDeckChangedEvent OnDeckChanged;
 
@@ -83,15 +84,30 @@ public class CardGameManager : MonoBehaviour
                 yield return WaitForActionPerformed().AsCoroutine();
                 stats.IncreaseTurn();
                 yield return HideCardUI().AsCoroutine();
-                yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 1);
+                yield return WaitAllCardEffects();
+                yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, 0.25);
             }
         }
+    }
+
+    public void AddCardToNextReward()
+    {
+        _addCardToNextReward = true;
     }
 
     public void ReleaseCard(Card card)
     {
         var cardPool = (StartingPool.Concat(FullPool ?? new List<CardDefinition>())).First(def => def.Name == card.Name);
         cardPool.Pool.ReleaseCard(card);
+        DrawnCard = null;
+    }
+
+    private IEnumerable<Action> WaitAllCardEffects()
+    {
+        while (DrawnCard != null)
+        {
+            yield return TimeYields.WaitOneFrame;
+        }
     }
 
     private Routine ShowCardUI()
@@ -147,6 +163,11 @@ public class CardGameManager : MonoBehaviour
         }
 
         DrawnCard = CurrentDeck.Dequeue();
+        if (_addCardToNextReward)
+        {
+            DrawnCard.AddTemporaryCardReward();
+            _addCardToNextReward = false;
+        }
         OnDeckChanged?.Invoke(CurrentDeck.Count);
         yield return DrawnCard.Draw().AsCoroutine();
     }
@@ -167,6 +188,21 @@ public class CardGameManager : MonoBehaviour
             }
         }
         yield break;
+    }
+
+    public Routine AddCardsToDeck(int amount)
+    {
+        var cards =
+            new WeightedDice<CardDefinition>(FullPool, new DefaultRandomGenerator());
+
+        for (var i = 0; i < amount; i++)
+        {
+            var selectedCard = cards.Generate();
+            if (selectedCard.Pool.TryGetCard(out var card))
+            {
+                yield return AddCard(card, i).AsCoroutine();
+            }
+        }
     }
 
     private Routine AddCard(Card card, int index)

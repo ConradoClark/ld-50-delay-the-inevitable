@@ -9,6 +9,7 @@ public class StatsManager : MonoBehaviour, IResettable
 {
     public enum Stat
     {
+        Card,
         Faith,
         Sorcery
     }
