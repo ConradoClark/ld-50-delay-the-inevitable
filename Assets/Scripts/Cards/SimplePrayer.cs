@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Licht.Impl.Orchestration;
 using UnityEngine;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
@@ -10,10 +11,17 @@ public class SimplePrayer : Card
         Debug.Log("Test Card was drawn!");
     }
 
+    public Dictionary<int, int> Amounts = new Dictionary<int, int>
+    {
+        {1, 20},
+        {2, 40},
+        {3, 100}
+    };
+
     public override Routine PlayCard()
     {
         var action = Toolbox.Instance.ActionsManager.ButtonMashAction;
-        action.Activate(20*Level, // change to a different thing
+        action.Activate(Amounts.ContainsKey(Level)? Amounts[Level] : 20 * Level, // change to a different thing
             Constants.InputActions.Clap, Constants.DefaultTimeLimit);
 
         while (action.Result==null)

@@ -129,7 +129,12 @@ public abstract class Card : MonoBehaviour, IPoolableObject
         Level = 1;
         Name = OriginalName;
         StatIncreases.Clear();
-        StatIncreases.AddRange(OriginalStatIncreases);
+        StatIncreases.AddRange(OriginalStatIncreases.Select(s=>
+            new StatQuantifier
+            {
+                Stat = s.Stat,
+                Amount = s.Amount,
+            }));
     }
 
     protected virtual void Evolve()

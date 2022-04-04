@@ -41,6 +41,10 @@ public class CardGameManager : MonoBehaviour
     public event OnDeckChangedEvent OnDeckChanged;
 
     public Ending EndingAsterisk;
+    public Ending EndingGrafted;
+    public Ending EndingDrifting;
+    public Ending EndingFaith;
+    public Ending EndingSorcery;
 
     public class DefaultRandomGenerator : IGenerator<int, float>
     {
@@ -140,11 +144,20 @@ public class CardGameManager : MonoBehaviour
 
     private Ending GetEnding()
     {
-        // Ending *: <30 turns - ended too quick, 
-        if (Toolbox.Instance.StatsManager.CurrentTurn < 30) return EndingAsterisk;
+        // Ending *: <20 turns - ended too quick, 
+        if (Toolbox.Instance.StatsManager.CurrentTurn < 20) return EndingAsterisk;
 
-        // Ending A: blablabla
-        return EndingAsterisk;
+        // Ending X: <=30 turns - Grafted
+        if (Toolbox.Instance.StatsManager.CurrentTurn <= 40) return EndingGrafted;
+
+        // Ending +: Faith > 40
+        if (Toolbox.Instance.StatsManager.Stats[StatsManager.Stat.Faith] > 40) return EndingFaith;
+
+        // Ending +: Sorcery > 40
+        if (Toolbox.Instance.StatsManager.Stats[StatsManager.Stat.Sorcery] > 40) return EndingSorcery;
+
+        // Ending by turns (low stats) - Drifting
+        return EndingDrifting;
     }
 
     public void RegisterPlayedCard()
