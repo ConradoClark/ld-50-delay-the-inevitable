@@ -13,7 +13,9 @@ public class ArtifactsManager : MonoBehaviour
     {
         InnerFaith,
         ChalkOfShadows,
-        Solemnity
+        Solemnity,
+        ArtDimension,
+        Meditation
     }
 
     [Serializable]

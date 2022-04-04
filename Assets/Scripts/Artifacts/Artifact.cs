@@ -10,6 +10,8 @@ public class Artifact : MonoBehaviour
     public bool AllowsClapping;
     public bool AllowsDrawing;
     public int ClappingEffectivenessModifier;
+    public int DrawingTimeLimitOverride;
+    public int PrayerTimeLimitOverride;
 
     public bool AllowsAction(string action) // this is a bit sketchy
     {

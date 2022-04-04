@@ -6266,7 +6266,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -6295,7 +6295,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0.109838486, w: 0}
+  m_margin: {x: -0.17940354, y: 0, z: 0.8960471, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -7471,11 +7471,25 @@ MonoBehaviour:
     Artifact: {fileID: 6698027140270163768, guid: 6b210d2f73db02f47b24bb1a23f24085, type: 3}
   - Key: 2
     Artifact: {fileID: 6463324173520689719, guid: 1a323e8584a871f438491e0e48c00987, type: 3}
+  - Key: 3
+    Artifact: {fileID: 7105932874379033455, guid: ef5ba650db367df40af8672da7c6128f, type: 3}
+  - Key: 4
+    Artifact: {fileID: 9206572627538532475, guid: cbe3d927ac6a0dc4ea3891d6f15cd1a5, type: 3}
   LearnTable:
   - Key: 2
     Requirements:
     - Stat: 1
       Amount: 5
+  - Key: 3
+    Requirements:
+    - Stat: 2
+      Amount: 7
+  - Key: 4
+    Requirements:
+    - Stat: 1
+      Amount: 10
+    - Stat: 2
+      Amount: 10
   ArtifactGainedText: {fileID: 1846757857}
 --- !u!1 &1228315675
 GameObject:

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using Licht.Impl.Orchestration;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
 
 public class ButtonMash : DefaultAction
@@ -20,7 +22,11 @@ public class ButtonMash : DefaultAction
 
     public void Activate(int requiredAmount, string requiredAction, int timeLimit)
     {
-        base.ActivateDefaults(timeLimit);
+        var timeLimitOverride =
+            Toolbox.Instance.ArtifactsManager.ArtifactReferences.Select(art => art.PrayerTimeLimitOverride)
+                .DefaultIfEmpty(0).Max();
+
+        base.ActivateDefaults(Math.Max(timeLimit, timeLimitOverride));
         RequiredAmount = requiredAmount;
         _buttonMashCount = 0;
         _action = Toolbox.Instance.MainInput.actions[requiredAction];
