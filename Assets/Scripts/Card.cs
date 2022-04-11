@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using Licht.Impl.Orchestration;
 using Licht.Interfaces.Pooling;
+using Licht.Unity.Extensions;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
+using UnityEngine.UIElements.Experimental;
 using Routine = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<System.Action>>;
 
 public abstract class Card : MonoBehaviour, IPoolableObject
@@ -158,12 +160,11 @@ public abstract class Card : MonoBehaviour, IPoolableObject
 
     protected IEnumerable<Action> SlideBack()
     {
-        return EasingYields.Lerp(
-            f => transform.position =
-                new Vector3(f, transform.position.y, transform.position.z),
-            () => transform.position.x, 0.75f, transform.position.x + 2.75f,
-            EasingYields.EasingFunction.QuadraticEaseOut,
-            Toolbox.Instance.MainTimer);;
+        return transform.GetAccessor().Position.X
+            .Increase(2.75f)
+            .Over(0.75f)
+            .Easing(EasingYields.EasingFunction.QuadraticEaseOut)
+            .Build();
     }
 
     protected Routine FlipSkipEffect()
@@ -171,17 +172,23 @@ public abstract class Card : MonoBehaviour, IPoolableObject
         var flip = false;
         for (var i = 0; i < 3; i++)
         {
-            var flipMotion = EasingYields.Lerp(
-                f => transform.localScale = new Vector3(f, transform.localScale.y, transform.localScale.z),
-                () => transform.localScale.x, 0.15f, 0, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+            var flipMotion = transform.GetAccessor().LocalScale.X
+                .SetTarget(0f)
+                .Over(0.15f)
+                .Easing(EasingYields.EasingFunction.CubicEaseIn)
+                .Build();
+
+            var flipBack = transform.GetAccessor().LocalScale.X
+                .SetTarget(1)
+                .Over(0.15f)
+                .Easing(EasingYields.EasingFunction.CubicEaseOut)
+                .Build();
 
             yield return flipMotion;
+
             SpriteRenderer.sprite = flip ? _cardSprite : Toolbox.Instance.CardDefaults.BackFaceSprite;
             flip = !flip;
 
-            var flipBack = EasingYields.Lerp(
-                f => transform.localScale = new Vector3(f, transform.localScale.y, transform.localScale.z),
-                () => transform.localScale.x, 0.15f, 1, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
             yield return flipBack;
         }
     }
@@ -232,16 +239,17 @@ public abstract class Card : MonoBehaviour, IPoolableObject
 
     protected Routine SuccessEffect()
     {
-        var motion = EasingYields.Lerp(
-            f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
-            () => transform.position.y, 1f,
-            transform.position.y + 0.25f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+        var motion = transform.GetAccessor().Position.Y
+            .Increase(0.25f)
+            .Over(1f)
+            .Easing(EasingYields.EasingFunction.CubicEaseOut)
+            .Build();
 
-        var fade = EasingYields.Lerp(
-            f => SpriteRenderer.color =
-                new Color(SpriteRenderer.color.r, SpriteRenderer.color.g, SpriteRenderer.color.b, f),
-            () => SpriteRenderer.color.a, 1f,
-            0f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+        var fade = SpriteRenderer.GetAccessor().Color.A
+            .SetTarget(0f)
+            .Over(1f)
+            .Easing(EasingYields.EasingFunction.CubicEaseIn)
+            .Build();
 
         yield return motion.Combine(fade);
     }
@@ -253,83 +261,85 @@ public abstract class Card : MonoBehaviour, IPoolableObject
             transform.Rotate(0, 0, (float)delta * 0.5f);
         });
 
-        var resize = EasingYields.Lerp(
-            f => transform.localScale = new Vector3(f, f, transform.localScale.z),
-            () => transform.localScale.x, 1f,
-            0f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+        var resize = transform.GetAccessor()
+            .UniformScale()
+            .SetTarget(0f)
+            .Over(1f)
+            .Easing(EasingYields.EasingFunction.CubicEaseOut)
+            .Build();
 
-        var fade = EasingYields.Lerp(
-            f => SpriteRenderer.color =
-                new Color(SpriteRenderer.color.r, SpriteRenderer.color.g, SpriteRenderer.color.b, f),
-            () => SpriteRenderer.color.a, 1f,
-            0f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+        var fade = SpriteRenderer.GetAccessor().Color.A
+            .SetTarget(0f)
+            .Over(1f)
+            .Easing(EasingYields.EasingFunction.CubicEaseIn)
+            .Build();
 
         yield return rotate.Combine(resize).Combine(fade);
     }
 
     protected Routine PlayEffect()
     {
-        var motion = EasingYields.Lerp(
-            f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
-            () => transform.position.y, 1f,
-            transform.position.y + 0.4f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+        var motion = transform.GetAccessor().Position.Y
+            .Increase(0.4f)
+            .Over(1f)
+            .Easing(EasingYields.EasingFunction.CubicEaseOut)
+            .Build();
 
-        var bounceEffect = EasingYields.Lerp(
-            f => transform.localScale = new Vector3(f, f, transform.localScale.z),
-            () => transform.localScale.x, 0.35f,
-            1.5f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+        var bounceTemplate = transform.GetAccessor().UniformScale()
+            .Over(0.35f);
 
-        var bounceBackEffect = EasingYields.Lerp(
-            f => transform.localScale = new Vector3(f, f, transform.localScale.z),
-            () => transform.localScale.x, 0.35f,
-            1.25f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
+        var bounce = bounceTemplate.SetTarget(1.5f)
+            .Easing(EasingYields.EasingFunction.CubicEaseIn)
+            .Build();
+
+        var bounceBack = bounceTemplate.SetTarget(1.25f)
+            .Easing(EasingYields.EasingFunction.CubicEaseOut)
+            .Build();
 
         yield return motion.Combine(
-            bounceEffect.Then(bounceBackEffect));
+            bounce.Then(bounceBack));
     }
 
     protected IEnumerable<Action> SlideIn()
     {
-        return EasingYields.Lerp(
-            f => transform.position =
-                new Vector3(f, transform.position.y, transform.position.z),
-            () => transform.position.x, 0.75f, transform.position.x - 2.75f,
-            EasingYields.EasingFunction.QuadraticEaseOut,
-            Toolbox.Instance.MainTimer);
+        return transform.GetAccessor()
+            .Position.X
+            .Decrease(2.75f)
+            .Over(0.75f)
+            .Easing(EasingYields.EasingFunction.QuadraticEaseOut)
+            .Build();
     }
 
     protected Routine Reveal()
     {
-        var flipMotion = EasingYields.Lerp(
-            f => transform.localScale = new Vector3(f, transform.localScale.y, transform.localScale.z),
-            () => transform.localScale.x, 0.45f, 0, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+        var flipTemplate = transform.GetAccessor()
+            .LocalScale.X
+            .Over(0.45f);
 
-        yield return flipMotion;
+        var flip = flipTemplate.SetTarget(0f).Easing(EasingYields.EasingFunction.CubicEaseIn).Build();
+        var flipBack = flipTemplate.SetTarget(1f).Easing(EasingYields.EasingFunction.CubicEaseOut).Build();
+
+        yield return flip;
         SpriteRenderer.sprite = _cardSprite;
-
-        var flipBack = EasingYields.Lerp(
-            f => transform.localScale = new Vector3(f, transform.localScale.y, transform.localScale.z),
-            () => transform.localScale.x, 0.45f, 1, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
         yield return flipBack;
     }
 
     public Routine SlideIntoDeck(float delay)
     {
-        var motion = EasingYields.Lerp(
-            f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
-            () => transform.position.y, delay,
-            transform.position.y - 0.75f, EasingYields.EasingFunction.CubicEaseIn, Toolbox.Instance.MainTimer);
+        var slideIntoDeck = transform.GetAccessor().Position.Y
+            .Decrease(0.75f)
+            .Over(delay)
+            .Easing(EasingYields.EasingFunction.CubicEaseIn)
+            .Build();
 
-        yield return motion.Combine(WaitAndSwoop(delay).AsCoroutine());
+        var swoop = transform.GetAccessor().Position.Y
+            .Decrease(0.35f)
+            .Over(delay * 0.4f)
+            .Easing(EasingYields.EasingFunction.CubicEaseOut)
+            .Build();
+
+        yield return slideIntoDeck;
+        Toolbox.Instance.Machinery().AddBasicMachine(swoop);
     }
 
-    protected Routine WaitAndSwoop(float delay)
-    {
-        yield return TimeYields.WaitSeconds(Toolbox.Instance.MainTimer, delay);
-        var motion = EasingYields.Lerp(
-            f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
-            () => transform.position.y, delay * 0.4f,
-            transform.position.y - 0.35f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
-        Toolbox.Instance.Machinery().AddBasicMachine(motion);
-    }
 }
