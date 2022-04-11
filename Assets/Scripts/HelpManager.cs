@@ -13,7 +13,7 @@ public class HelpManager : MonoBehaviour
     void OnEnable()
     {
         _helpContexts = new List<HelpContext>();
-        Toolbox.Instance.MainMachinery.AddBasicMachine(23, HandleHelp());
+        Toolbox.Instance.Machinery().AddBasicMachine(HandleHelp());
     }
 
     private Routine HandleHelp()

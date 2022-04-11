@@ -28,7 +28,7 @@ public class GameUI : MonoBehaviour
 
     void OnEnable()
     {
-        Toolbox.Instance.MainMachinery.AddBasicMachine(88, HandleTimer());
+        Toolbox.Instance.Machinery().AddBasicMachine(HandleTimer());
         Toolbox.Instance.StatsManager.OnTurnChanged += StatsManager_OnTurnChanged;
         Toolbox.Instance.StatsManager.OnStatChanged += StatsManager_OnStatChanged;
         Toolbox.Instance.CardGameManager.OnDeckChanged += CardGameManager_OnDeckChanged;

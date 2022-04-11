@@ -82,7 +82,7 @@ public class ArtifactsManager : MonoBehaviour
 
     private void StatsManager_OnStatChanged(StatsManager.Stat stat, int value)
     {
-        Toolbox.Instance.MainMachinery.AddBasicMachine(99, HandleLearning());
+        Toolbox.Instance.Machinery().AddBasicMachine(HandleLearning());
     }
 
     private Routine HandleLearning()
@@ -106,7 +106,7 @@ public class ArtifactsManager : MonoBehaviour
         var artifactComponent = obj.GetComponent<Artifact>();
         if (learned)
         {
-            Toolbox.Instance.MainMachinery.AddBasicMachine(83, FlashArtifactText(artifactComponent.Name));
+            Toolbox.Instance.Machinery().AddBasicMachine( FlashArtifactText(artifactComponent.Name));
         }
 
         CurrentArtifacts.Add(artifact);

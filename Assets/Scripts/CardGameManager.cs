@@ -58,7 +58,7 @@ public class CardGameManager : MonoBehaviour
 
     void OnEnable()
     {
-        Toolbox.Instance.MainMachinery.AddBasicMachine(1, StartGame());
+        Toolbox.Instance.Machinery().AddBasicMachine(StartGame());
     }
 
     public Routine StartGame()
@@ -66,7 +66,7 @@ public class CardGameManager : MonoBehaviour
         IsGameActive = true;
         _hitEndGameTrigger = false;
 
-        Toolbox.Instance.MainMachinery.AddBasicMachine(100, GameLoop());
+        Toolbox.Instance.Machinery().AddBasicMachine( GameLoop());
         yield break;
     }
 

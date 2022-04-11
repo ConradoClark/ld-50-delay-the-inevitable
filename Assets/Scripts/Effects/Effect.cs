@@ -27,7 +27,7 @@ public class Effect : MonoBehaviour, IPoolableObject
     {
         gameObject.SetActive(true);
         Animator.Play(Animation);
-        Toolbox.Instance.MainMachinery.AddBasicMachine(344, Expire());
+        Toolbox.Instance.Machinery().AddBasicMachine(Expire());
         return true;
     }
 

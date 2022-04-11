@@ -38,7 +38,7 @@ public class DrawAction : DefaultAction, IPoolableObjectFactory<Ink>
             Toolbox.Instance.ArtifactsManager.ArtifactReferences.Select(art => art.DrawingTimeLimitOverride).DefaultIfEmpty(0).Max();
 
         base.ActivateDefaults(Math.Max(timeLimit, timeLimitOverride));
-        Toolbox.Instance.MainMachinery.AddBasicMachine(56, HandleAction());
+        Toolbox.Instance.Machinery().AddBasicMachine( HandleAction());
 
         StrokesText.text = $"{_drawing.MaximumStrokes} stroke(s) left.";
     }

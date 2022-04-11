@@ -67,7 +67,7 @@ public class CardUI : MonoBehaviour
 
         var targetX = StatsGroup.position.x;
         StatsGroup.position = new Vector3(StatsGroup.position.x + 0.5f, StatsGroup.position.y, StatsGroup.position.z);
-        Toolbox.Instance.MainMachinery.AddBasicMachine(44, AnimateStats(targetX));
+        Toolbox.Instance.Machinery().AddBasicMachine(AnimateStats(targetX));
     }
 
     private Routine AnimateStats(float targetX)

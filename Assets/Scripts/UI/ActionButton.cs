@@ -17,7 +17,7 @@ public class ActionButton : MonoBehaviour
     void OnEnable()
     {
         _hasClicked = false;
-        Toolbox.Instance.MainMachinery.AddBasicMachine(33, HandleClick());
+        Toolbox.Instance.Machinery().AddBasicMachine(HandleClick());
         _originalHelpDescription = HelpContext.Description;
     }
 

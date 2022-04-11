@@ -33,7 +33,7 @@ public class ButtonMash : DefaultAction
         _isActionAllowed = Toolbox.Instance.ArtifactsManager.ArtifactReferences.Any(art => art.AllowsAction(requiredAction));
 
         Counter.text = requiredAmount.ToString().PadLeft(3, '0');
-        Toolbox.Instance.MainMachinery.AddBasicMachine(56, HandleAction());
+        Toolbox.Instance.Machinery().AddBasicMachine( HandleAction());
     }
 
     private Routine MashEffect()
@@ -68,7 +68,7 @@ public class ButtonMash : DefaultAction
             {
                 _buttonMashCount+= effectiveness+1;
                 Counter.text = (RequiredAmount - _buttonMashCount).ToString().PadLeft(3, '0');
-                Toolbox.Instance.MainMachinery.AddBasicMachine(44, MashEffect());
+                Toolbox.Instance.Machinery().AddBasicMachine( MashEffect());
             }
 
             if (_buttonMashCount >= RequiredAmount)

@@ -17,8 +17,8 @@ public class DefaultAction : MonoBehaviour
         TimeLimitExpired = false;
         gameObject.SetActive(true);
         Toolbox.Instance.CardGameManager.GameUI.SetTimer(timeLimit);
-        Toolbox.Instance.MainMachinery.AddBasicMachine(55, HandleTimeLimit(timeLimit));
-        Toolbox.Instance.MainMachinery.AddBasicMachine(57, FlashText());
+        Toolbox.Instance.Machinery().AddBasicMachine(HandleTimeLimit(timeLimit));
+        Toolbox.Instance.Machinery().AddBasicMachine(FlashText());
     }
 
     private Routine FlashText()

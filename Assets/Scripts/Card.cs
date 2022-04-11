@@ -109,8 +109,7 @@ public abstract class Card : MonoBehaviour, IPoolableObject
             default: break;
         }
 
-        Toolbox.Instance.MainMachinery.AddBasicMachine(88,
-            Toolbox.Instance.CardGameManager.CardUI.HideResultMessage().AsCoroutine());
+        Toolbox.Instance.Machinery().AddBasicMachine(Toolbox.Instance.CardGameManager.CardUI.HideResultMessage().AsCoroutine());
         TemporaryStatIncreases.Clear();
         Toolbox.Instance.CardGameManager.ReleaseCard(this);
     }
@@ -331,6 +330,6 @@ public abstract class Card : MonoBehaviour, IPoolableObject
             f => transform.position = new Vector3(transform.position.x, f, transform.position.z),
             () => transform.position.y, delay * 0.4f,
             transform.position.y - 0.35f, EasingYields.EasingFunction.CubicEaseOut, Toolbox.Instance.MainTimer);
-        Toolbox.Instance.MainMachinery.AddBasicMachine(200, motion);
+        Toolbox.Instance.Machinery().AddBasicMachine(motion);
     }
 }
